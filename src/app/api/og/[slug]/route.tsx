@@ -136,6 +136,21 @@ export async function GET(
     isPeak: i === peakDayIdx,
   }));
 
+  const getHeatColor = (value: number, isPeak: boolean): string => {
+    if (isPeak) return COLORS.primary;
+    if (value === 0) return COLORS.gray5;
+    const intensity = Math.floor(value * 5);
+    const shades = [
+      "#2a1512", // very dark red
+      "#3d1f1b", // dark red
+      "#5c2e28", // muted red
+      "#7a3d35", // medium red
+      "#9a4d42", // lighter red
+      "#b85a4f", // near primary
+    ];
+    return shades[Math.min(intensity, shades.length - 1)];
+  };
+
   const Corner = ({ position }: { position: string }) => (
     <div
       style={{
@@ -161,14 +176,14 @@ export async function GET(
       style={{
         display: "flex",
         fontFamily: "JetBrains Mono",
-        fontSize: 11,
+        fontSize: 14,
         letterSpacing: "0.15em",
-        color: COLORS.textTertiary,
+        color: COLORS.textSecondary,
       }}
     >
-      <span style={{ color: COLORS.textMuted }}>[ </span>
+      <span style={{ color: COLORS.textTertiary }}>[ </span>
       {children}
-      <span style={{ color: COLORS.textMuted }}> ]</span>
+      <span style={{ color: COLORS.textTertiary }}> ]</span>
     </div>
   );
 
@@ -331,9 +346,9 @@ export async function GET(
           ))}
         </div>
 
-        {/* Middle Section - Two columns */}
+        {/* Main Content - Two columns */}
         <div style={{ display: "flex", flex: 1, gap: 16, marginTop: 16 }}>
-          {/* Left Column - Archetype + Focus stacked */}
+          {/* Left Column - Archetype, Focus, Activity stacked */}
           <div
             style={{
               display: "flex",
@@ -347,7 +362,6 @@ export async function GET(
               style={{
                 display: "flex",
                 flexDirection: "column",
-                flex: 1,
                 border: `1px solid ${COLORS.line}`,
                 padding: 24,
                 position: "relative",
@@ -363,18 +377,17 @@ export async function GET(
                   display: "flex",
                   alignItems: "center",
                   gap: 20,
-                  marginTop: 20,
-                  flex: 1,
+                  marginTop: 16,
                 }}
               >
-                <div style={{ display: "flex", fontSize: 64 }}>{def.emoji}</div>
+                <div style={{ display: "flex", fontSize: 56 }}>{def.emoji}</div>
                 <div
-                  style={{ display: "flex", flexDirection: "column", gap: 8 }}
+                  style={{ display: "flex", flexDirection: "column", gap: 6 }}
                 >
                   <div
                     style={{
                       display: "flex",
-                      fontSize: 32,
+                      fontSize: 28,
                       fontWeight: 700,
                       color: COLORS.primary,
                     }}
@@ -384,7 +397,7 @@ export async function GET(
                   <div
                     style={{
                       display: "flex",
-                      fontSize: 16,
+                      fontSize: 15,
                       color: COLORS.textSecondary,
                     }}
                   >
@@ -399,7 +412,6 @@ export async function GET(
               style={{
                 display: "flex",
                 flexDirection: "column",
-                flex: 1,
                 border: `1px solid ${COLORS.line}`,
                 padding: 24,
                 position: "relative",
@@ -413,10 +425,8 @@ export async function GET(
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: 16,
-                  marginTop: 20,
-                  flex: 1,
-                  justifyContent: "center",
+                  gap: 14,
+                  marginTop: 16,
                 }}
               >
                 {topGoals.map((goal) => (
@@ -439,7 +449,7 @@ export async function GET(
                       style={{
                         display: "flex",
                         flex: 1,
-                        height: 24,
+                        height: 22,
                         background: COLORS.gray5,
                       }}
                     >
@@ -472,314 +482,342 @@ export async function GET(
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Right Column - Tools (single card, fills) */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flex: 1,
-              border: `1px solid ${COLORS.line}`,
-              padding: 24,
-              position: "relative",
-            }}
-          >
-            <Corner position="tl" />
-            <Corner position="tr" />
-            <Corner position="bl" />
-            <Corner position="br" />
-
-            <BracketLabel>TOOLS</BracketLabel>
-
+            {/* Activity Card - Takes remaining space */}
             <div
               style={{
                 display: "flex",
                 flexDirection: "column",
-                gap: 20,
-                marginTop: 24,
                 flex: 1,
-                justifyContent: "center",
+                border: `1px solid ${COLORS.line}`,
+                padding: 24,
+                position: "relative",
               }}
             >
-              {topTools.map((tool) => (
+              <Corner position="tl" />
+              <Corner position="br" />
+
+              <BracketLabel>WHEN YOU CODE</BracketLabel>
+
+              {/* Hour distribution */}
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 8,
+                  marginTop: 16,
+                }}
+              >
                 <div
-                  key={tool.name}
-                  style={{ display: "flex", alignItems: "center", gap: 16 }}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontFamily: "JetBrains Mono",
+                    fontSize: 14,
+                    color: COLORS.textSecondary,
+                  }}
                 >
-                  <div
-                    style={{
-                      display: "flex",
-                      width: 120,
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 16,
-                      color: tool.isTop ? COLORS.primary : COLORS.textTertiary,
-                    }}
-                  >
-                    {tool.name}
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      height: 28,
-                      background: COLORS.gray5,
-                    }}
-                  >
+                  <span>BY HOUR</span>
+                  <span>
+                    peak:{" "}
+                    <span style={{ color: COLORS.primary }}>{peakTimeStr}</span>
+                  </span>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 3,
+                    height: 56,
+                    border: `1px solid ${COLORS.line}`,
+                    padding: 6,
+                  }}
+                >
+                  {hourlyData.map((h, i) => (
                     <div
+                      key={i}
                       style={{
                         display: "flex",
-                        width: `${Math.max(tool.percent, 2)}%`,
+                        flex: 1,
                         height: "100%",
-                        background: tool.isTop ? COLORS.primary : COLORS.gray7,
+                        background: getHeatColor(h.value, h.isPeak),
                       }}
                     />
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      width: 80,
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 16,
-                      color: tool.isTop ? COLORS.primary : COLORS.textMuted,
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    {formatNum(tool.count)}
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontFamily: "JetBrains Mono",
+                    fontSize: 12,
+                    color: COLORS.textMuted,
+                  }}
+                >
+                  <span>00</span>
+                  <span>12</span>
+                  <span>24</span>
+                </div>
+              </div>
 
-        {/* Bottom Section - Activity + Highlights */}
-        <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
-          {/* Activity Card */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flex: 1,
-              border: `1px solid ${COLORS.line}`,
-              padding: 24,
-              position: "relative",
-            }}
-          >
-            <Corner position="tl" />
-            <Corner position="br" />
-
-            <BracketLabel>WHEN YOU CODE</BracketLabel>
-
-            {/* Hour distribution */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 6,
-                marginTop: 16,
-              }}
-            >
+              {/* Divider */}
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 12,
-                  color: COLORS.textMuted,
+                  height: 1,
+                  background: COLORS.line,
+                  marginTop: 20,
+                  marginBottom: 20,
                 }}
-              >
-                <span>BY HOUR</span>
-                <span>
-                  peak:{" "}
-                  <span style={{ color: COLORS.primary }}>{peakTimeStr}</span>
-                </span>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  gap: 2,
-                  height: 40,
-                  border: `1px solid ${COLORS.line}`,
-                  padding: 4,
-                }}
-              >
-                {hourlyData.map((h, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      flex: 1,
-                      height: "100%",
-                      background: h.isPeak ? COLORS.primary : COLORS.gray7,
-                      opacity: Math.max(h.value, 0.15),
-                    }}
-                  />
-                ))}
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 10,
-                  color: COLORS.textMuted,
-                }}
-              >
-                <span>00</span>
-                <span>12</span>
-                <span>24</span>
-              </div>
-            </div>
+              />
 
-            {/* Day distribution */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 6,
-                marginTop: 20,
-              }}
-            >
+              {/* Day distribution */}
               <div
                 style={{
                   display: "flex",
-                  justifyContent: "space-between",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 12,
-                  color: COLORS.textMuted,
+                  flexDirection: "column",
+                  gap: 8,
+                  flex: 1,
                 }}
               >
-                <span>BY DAY</span>
-                <span>
-                  peak:{" "}
-                  <span style={{ color: COLORS.primary }}>{peakDayStr}</span>
-                </span>
-              </div>
-              <div style={{ display: "flex", gap: 8 }}>
-                {dailyData.map((d, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      flex: 1,
-                      gap: 6,
-                      alignItems: "center",
-                    }}
-                  >
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontFamily: "JetBrains Mono",
+                    fontSize: 14,
+                    color: COLORS.textSecondary,
+                  }}
+                >
+                  <span>BY DAY</span>
+                  <span>
+                    peak:{" "}
+                    <span style={{ color: COLORS.primary }}>{peakDayStr}</span>
+                  </span>
+                </div>
+                <div style={{ display: "flex", gap: 10, flex: 1 }}>
+                  {dailyData.map((d, i) => (
                     <div
+                      key={i}
                       style={{
                         display: "flex",
-                        width: "100%",
-                        height: 48,
-                        background: COLORS.gray5,
+                        flexDirection: "column",
+                        flex: 1,
+                        gap: 8,
+                        alignItems: "center",
                       }}
                     >
                       <div
                         style={{
                           display: "flex",
                           width: "100%",
-                          height: `${Math.max(d.value * 100, 10)}%`,
-                          background: d.isPeak ? COLORS.primary : COLORS.gray7,
-                          alignSelf: "flex-end",
+                          flex: 1,
+                          background: COLORS.gray5,
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            width: "100%",
+                            height: `${Math.max(d.value * 100, 10)}%`,
+                            background: getHeatColor(d.value, d.isPeak),
+                            alignSelf: "flex-end",
+                          }}
+                        />
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          fontFamily: "JetBrains Mono",
+                          fontSize: 14,
+                          color: d.isPeak ? COLORS.primary : COLORS.textMuted,
+                        }}
+                      >
+                        {daysShort[i].charAt(0)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Tools + Highlights stacked */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              gap: 16,
+            }}
+          >
+            {/* Tools Card */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                border: `1px solid ${COLORS.line}`,
+                padding: 24,
+                position: "relative",
+              }}
+            >
+              <Corner position="tl" />
+              <Corner position="tr" />
+              <Corner position="bl" />
+              <Corner position="br" />
+
+              <BracketLabel>TOOLS</BracketLabel>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 14,
+                  marginTop: 16,
+                }}
+              >
+                {topTools.map((tool) => (
+                  <div
+                    key={tool.name}
+                    style={{ display: "flex", alignItems: "center", gap: 16 }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        width: 130,
+                        fontFamily: "JetBrains Mono",
+                        fontSize: 16,
+                        color: tool.isTop ? COLORS.primary : COLORS.textTertiary,
+                      }}
+                    >
+                      {tool.name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: 1,
+                        height: 24,
+                        background: COLORS.gray5,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          width: `${Math.max(tool.percent, 2)}%`,
+                          height: "100%",
+                          background: tool.isTop ? COLORS.primary : COLORS.gray7,
                         }}
                       />
                     </div>
                     <div
                       style={{
                         display: "flex",
+                        width: 80,
                         fontFamily: "JetBrains Mono",
-                        fontSize: 12,
-                        color: d.isPeak ? COLORS.primary : COLORS.textMuted,
+                        fontSize: 16,
+                        color: tool.isTop ? COLORS.primary : COLORS.textMuted,
+                        justifyContent: "flex-end",
                       }}
                     >
-                      {daysShort[i].charAt(0)}
+                      {formatNum(tool.count)}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Highlights Card */}
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-              border: `1px solid ${COLORS.line}`,
-              position: "relative",
-            }}
-          >
-            <Corner position="tl" />
-            <Corner position="tr" />
-            <Corner position="bl" />
-            <Corner position="br" />
+            {/* Highlights Card - 3x3 Grid */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                border: `1px solid ${COLORS.line}`,
+                position: "relative",
+              }}
+            >
+              <Corner position="tl" />
+              <Corner position="tr" />
+              <Corner position="bl" />
+              <Corner position="br" />
 
-            {[
-              {
-                label: "BUSIEST DAY",
-                value: `${formatDate(payload.highlights.busiestDay)}`,
-                sub: `${formatNum(payload.highlights.busiestDayMessages)} msgs`,
-              },
-              {
-                label: "MARATHON",
-                value: formatMinutes(payload.highlights.longestSessionMinutes),
-                sub: "longest session",
-              },
-              {
-                label: "RARE TOOL",
-                value: payload.highlights.rarestTool,
-                sub: "least used",
-              },
-            ].map((highlight, i) => (
-              <div
-                key={highlight.label}
-                style={{
-                  display: "flex",
-                  flex: 1,
-                  flexDirection: "column",
-                  padding: 24,
-                  justifyContent: "center",
-                  borderLeft: i > 0 ? `1px solid ${COLORS.line}` : "none",
-                }}
-              >
+              {[
+                [
+                  { label: "BUSIEST DAY", value: formatDate(payload.highlights.busiestDay), sub: `${formatNum(payload.highlights.busiestDayMessages)} msgs` },
+                  { label: "MARATHON", value: formatMinutes(payload.highlights.longestSessionMinutes), sub: "longest session" },
+                  { label: "PROJECTS", value: String(payload.projectCount), sub: "worked on" },
+                ],
+                [
+                  { label: "LINES CHANGED", value: formatNum(payload.stats.linesChanged), sub: "total edits" },
+                  { label: "TOP TOOL", value: payload.highlights.topToolName, sub: `${formatNum(payload.highlights.topToolCount)} uses` },
+                  { label: "RARE TOOL", value: payload.highlights.rarestTool, sub: "least used" },
+                ],
+                [
+                  { label: "FIRST SESSION", value: formatDate(payload.highlights.firstSessionDate), sub: "started coding" },
+                  { label: "ACTIVE DAYS", value: String(payload.streaks.totalActiveDays), sub: "total days" },
+                  { label: "CURRENT STREAK", value: String(payload.streaks.current), sub: "days active" },
+                ],
+              ].map((row, rowIdx) => (
                 <div
+                  key={rowIdx}
                   style={{
                     display: "flex",
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 12,
-                    color: COLORS.textMuted,
-                    letterSpacing: "0.1em",
+                    flex: 1,
+                    borderTop: rowIdx > 0 ? `1px solid ${COLORS.line}` : "none",
                   }}
                 >
-                  {highlight.label}
+                  {row.map((highlight, colIdx) => (
+                    <div
+                      key={highlight.label}
+                      style={{
+                        display: "flex",
+                        flex: 1,
+                        flexDirection: "column",
+                        padding: 28,
+                        justifyContent: "center",
+                        borderLeft: colIdx > 0 ? `1px solid ${COLORS.line}` : "none",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          fontFamily: "JetBrains Mono",
+                          fontSize: 16,
+                          color: COLORS.textSecondary,
+                          letterSpacing: "0.12em",
+                        }}
+                      >
+                        {highlight.label}
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          fontFamily: "JetBrains Mono",
+                          fontSize: 42,
+                          fontWeight: 700,
+                          color: COLORS.text,
+                          marginTop: 12,
+                          wordBreak: "break-word",
+                          lineHeight: 1.1,
+                        }}
+                      >
+                        {highlight.value}
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          fontFamily: "JetBrains Mono",
+                          fontSize: 16,
+                          color: COLORS.textTertiary,
+                          marginTop: 8,
+                        }}
+                      >
+                        {highlight.sub}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 20,
-                    fontWeight: 700,
-                    color: COLORS.text,
-                    marginTop: 8,
-                  }}
-                >
-                  {highlight.value}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 12,
-                    color: COLORS.textTertiary,
-                    marginTop: 4,
-                  }}
-                >
-                  {highlight.sub}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
