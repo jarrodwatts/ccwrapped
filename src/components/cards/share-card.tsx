@@ -37,7 +37,7 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "claude-code-wrapped.png";
+      a.download = "ccwrapped.png";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

@@ -2,8 +2,8 @@
 
 Your year in code, visualized. A Spotify Wrapped-style experience for Claude Code users.
 
-[![License](https://img.shields.io/github/license/jarrodwatts/claude-code-wrapped?v=2)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/jarrodwatts/claude-code-wrapped?v=2)](https://github.com/jarrodwatts/claude-code-wrapped/stargazers)
+[![License](https://img.shields.io/github/license/jarrodwatts/ccwrapped?v=2)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/jarrodwatts/ccwrapped?v=2)](https://github.com/jarrodwatts/ccwrapped/stargazers)
 
 ![Claude Code Wrapped Preview](og-preview.png)
 

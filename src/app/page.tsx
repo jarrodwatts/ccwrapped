@@ -43,7 +43,7 @@ export default function Home() {
           </div>
           <Button variant="terminal" size="sm" asChild>
             <a
-              href="https://github.com/jarrodwatts/claude-code-wrapped"
+              href="https://github.com/jarrodwatts/ccwrapped"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -174,7 +174,7 @@ export default function Home() {
               patterns. No code, prompts, file paths, or project names ever leave
               your machine.{" "}
               <a
-                href="https://github.com/jarrodwatts/claude-code-wrapped"
+                href="https://github.com/jarrodwatts/ccwrapped"
                 className="text-text-primary underline underline-offset-4 hover:text-primary transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
