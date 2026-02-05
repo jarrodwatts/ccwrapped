@@ -14,7 +14,12 @@ export function ArchetypeCard({ payload }: ArchetypeCardProps) {
   return (
     <div className="relative flex h-full flex-col items-center justify-center overflow-hidden px-8 text-center">
       {/* Background glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(217,119,87,0.12)_0%,transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/3 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-[120px]" />
+      </div>
+
+      {/* Grid pattern */}
+      <div className="pointer-events-none absolute inset-0 grid-pattern opacity-20" />
 
       <motion.div
         className="relative z-10"
@@ -31,22 +36,22 @@ export function ArchetypeCard({ payload }: ArchetypeCardProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
       >
-        <p className="mb-2 font-mono text-xs tracking-widest text-white/30 uppercase">
-          You are
-        </p>
-        <h2 className="bg-gradient-to-r from-[#D97757] to-[#E8956F] bg-clip-text text-4xl font-bold text-transparent sm:text-5xl">
+        <span className="label mb-2 block">You are</span>
+        <h2 className="text-gradient glow-text text-4xl font-bold sm:text-5xl">
           {def.name}
         </h2>
       </motion.div>
 
-      <motion.p
-        className="relative z-10 mt-6 max-w-sm text-base leading-relaxed text-white/60"
+      <motion.div
+        className="card-industrial relative z-10 mt-8 max-w-sm px-6 py-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
       >
-        {def.description}
-      </motion.p>
+        <p className="text-base leading-relaxed text-text-secondary">
+          {def.description}
+        </p>
+      </motion.div>
     </div>
   );
 }

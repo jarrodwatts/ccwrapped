@@ -3,136 +3,175 @@ import type { Archetype } from "@/lib/types";
 
 const FEATURED_ARCHETYPES: Archetype[] = [
   "night_owl",
+  "marathoner",
   "bug_hunter",
   "builder",
   "streak_master",
   "tool_master",
-  "delegator",
 ];
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[#0A0A0A]">
-      {/* Background glow */}
+    <div className="relative min-h-screen bg-background">
+      {/* Grid pattern background */}
+      <div className="pointer-events-none absolute inset-0 grid-pattern opacity-50" />
+
+      {/* Glow accent */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-[-20%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#D97757]/10 blur-[150px]" />
+        <div className="absolute top-0 left-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/8 blur-[120px]" />
       </div>
 
-      <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-16 px-6 py-24">
-        {/* Hero */}
-        <section className="flex flex-col items-center gap-6 text-center">
-          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-            <div className="h-2 w-2 animate-pulse rounded-full bg-[#D97757]" />
-            <span className="text-sm font-medium text-white/60">
-              For Claude Code users
+      {/* Header */}
+      <header className="relative border-b border-border">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary font-bold text-sm">
+              W
+            </div>
+            <span className="font-semibold text-text-primary tracking-tight">
+              ccwrapped
             </span>
           </div>
+          <a
+            href="https://github.com/jarrodwatts/claude-code-wrapped"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-tactile px-4 py-2 text-sm text-text-secondary hover:text-text-primary"
+          >
+            GitHub
+          </a>
+        </div>
+      </header>
 
-          <h1 className="text-5xl font-bold tracking-tight text-white sm:text-7xl">
-            Claude Code
-            <br />
-            <span className="text-[#D97757]">Wrapped</span>
-          </h1>
+      <main className="relative">
+        {/* Hero */}
+        <section className="mx-auto max-w-6xl px-6 py-24">
+          <div className="flex flex-col items-center gap-8 text-center">
+            {/* Status badge */}
+            <div className="flex items-center gap-2 rounded-full border border-border-strong bg-surface px-4 py-2">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              </span>
+              <span className="text-sm font-medium text-text-secondary">
+                For Claude Code users
+              </span>
+            </div>
 
-          <p className="max-w-md text-lg text-white/50">
-            Your sessions, tools, streaks, and coding personality — visualized
-            and shareable.
-          </p>
+            {/* Title */}
+            <div className="flex flex-col gap-4">
+              <h1 className="text-6xl font-bold tracking-tight text-text-primary sm:text-8xl">
+                CLAUDE CODE
+              </h1>
+              <h1 className="text-6xl font-bold tracking-tight sm:text-8xl">
+                <span className="text-gradient glow-text">WRAPPED</span>
+              </h1>
+            </div>
+
+            {/* Description */}
+            <p className="max-w-lg text-lg text-text-secondary">
+              Your sessions, tools, streaks, and coding personality —
+              <br className="hidden sm:block" />
+              visualized and shareable.
+            </p>
+
+            {/* CTA */}
+            <div className="mt-4 flex flex-col items-center gap-4">
+              <div className="card-industrial flex items-center gap-3 px-6 py-4">
+                <span className="label">Install</span>
+                <code className="font-mono text-sm text-text-primary">
+                  /install jarrodwatts/claude-code-wrapped
+                </code>
+              </div>
+              <span className="text-sm text-text-muted">
+                Then run <code className="text-primary">/wrapped</code> in any session
+              </span>
+            </div>
+          </div>
         </section>
 
-        {/* How it works */}
-        <section className="flex w-full flex-col gap-8">
-          <h2 className="text-center text-sm font-medium tracking-[0.2em] text-white/40 uppercase">
-            How It Works
-          </h2>
+        {/* How it works - Bento grid */}
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <div className="mb-12 text-center">
+            <span className="label">How It Works</span>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <Step
-              number="1"
+            <StepCard
+              number="01"
               title="Install Plugin"
               description="Add the plugin to Claude Code with one command"
             />
-            <Step
-              number="2"
+            <StepCard
+              number="02"
               title="Run /wrapped"
               description="The plugin analyzes your local session data"
             />
-            <Step
-              number="3"
+            <StepCard
+              number="03"
               title="Share"
               description="Get your cards and share your archetype"
             />
           </div>
-
-          <div className="flex flex-col items-center gap-3">
-            <code className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-mono text-sm text-white/80">
-              /install jarrodwatts/claude-code-wrapped
-            </code>
-            <span className="text-xs text-white/30">
-              Then type <code className="text-white/50">/wrapped</code> in any
-              Claude Code session
-            </span>
-          </div>
         </section>
 
-        {/* Archetypes preview */}
-        <section className="flex w-full flex-col gap-8">
-          <h2 className="text-center text-sm font-medium tracking-[0.2em] text-white/40 uppercase">
-            Which One Are You?
-          </h2>
+        {/* Archetypes - Bento grid */}
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <div className="mb-12 text-center">
+            <span className="label">Which One Are You?</span>
+          </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {FEATURED_ARCHETYPES.map((key) => {
               const a = ARCHETYPE_DEFINITIONS[key];
-              return (
-                <div
-                  key={key}
-                  className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/[0.02] p-5"
-                >
-                  <span className="text-4xl">{a.emoji}</span>
-                  <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-white">{a.name}</span>
-                    <span className="text-sm text-white/40">
-                      {a.shortDescription}
-                    </span>
-                  </div>
-                </div>
-              );
+              return <ArchetypeCard key={key} emoji={a.emoji} name={a.name} description={a.shortDescription} />;
             })}
           </div>
         </section>
 
         {/* Privacy */}
-        <section className="flex flex-col items-center gap-4 text-center">
-          <h2 className="text-sm font-medium tracking-[0.2em] text-white/40 uppercase">
-            Privacy First
-          </h2>
-          <p className="max-w-md text-sm text-white/40">
-            Only aggregate stats are shared — session counts, tool usage, time
-            patterns. No code, prompts, file paths, or project names ever leave
-            your machine. The plugin is{" "}
-            <a
-              href="https://github.com/jarrodwatts/claude-code-wrapped"
-              className="text-[#D97757] hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              open source
-            </a>
-            .
-          </p>
+        <section className="mx-auto max-w-6xl px-6 py-16">
+          <div className="card-industrial mx-auto max-w-2xl p-8 text-center">
+            <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-surface-raised text-2xl">
+              🔒
+            </div>
+            <h3 className="mb-2 text-lg font-semibold text-text-primary">
+              Privacy First
+            </h3>
+            <p className="text-sm text-text-secondary">
+              Only aggregate stats are shared — session counts, tool usage, time
+              patterns. No code, prompts, file paths, or project names ever leave
+              your machine. The plugin is{" "}
+              <a
+                href="https://github.com/jarrodwatts/claude-code-wrapped"
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                open source
+              </a>
+              .
+            </p>
+          </div>
         </section>
 
         {/* Footer */}
-        <footer className="text-xs text-white/20">
-          Not affiliated with Anthropic.
+        <footer className="border-t border-border py-8">
+          <div className="mx-auto max-w-6xl px-6 flex items-center justify-between">
+            <span className="text-sm text-text-muted">
+              Not affiliated with Anthropic.
+            </span>
+            <span className="text-sm text-text-muted">
+              ccwrapped.com
+            </span>
+          </div>
         </footer>
-      </div>
+      </main>
     </div>
   );
 }
 
-function Step({
+function StepCard({
   number,
   title,
   description,
@@ -142,12 +181,34 @@ function Step({
   description: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-white/5 bg-white/[0.02] p-5">
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D97757]/10 text-sm font-bold text-[#D97757]">
-        {number}
+    <div className="card-industrial flex flex-col gap-4 p-6">
+      <div className="flex items-center justify-between">
+        <span className="label">{title.toUpperCase()}</span>
+        <span className="font-mono text-3xl font-bold text-primary">{number}</span>
       </div>
-      <span className="font-semibold text-white">{title}</span>
-      <span className="text-sm text-white/40">{description}</span>
+      <p className="text-sm text-text-secondary">{description}</p>
+    </div>
+  );
+}
+
+function ArchetypeCard({
+  emoji,
+  name,
+  description,
+}: {
+  emoji: string;
+  name: string;
+  description: string;
+}) {
+  return (
+    <div className="card-industrial group flex items-center gap-4 p-5 transition-all hover:border-primary/30">
+      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface-raised text-3xl transition-transform group-hover:scale-110">
+        {emoji}
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className="font-semibold text-text-primary">{name}</span>
+        <span className="text-sm text-text-tertiary">{description}</span>
+      </div>
     </div>
   );
 }

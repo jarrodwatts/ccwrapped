@@ -1,28 +1,201 @@
 @import "tailwindcss";
 
 @theme inline {
+  /* Base colors - industrial dark */
   --color-background: #0A0A0A;
   --color-foreground: #FFFFFF;
-  --color-primary: #D97757;
+  --color-surface: #111111;
+  --color-surface-raised: #161616;
+
+  /* Accent - coral/salmon */
+  --color-primary: #E85A4F;
+  --color-primary-hover: #D44A3F;
   --color-primary-foreground: #FFFFFF;
+  --color-primary-muted: rgba(232, 90, 79, 0.15);
+
+  /* Neutrals */
   --color-muted: #1A1A1A;
   --color-muted-foreground: rgba(255, 255, 255, 0.5);
+  --color-subtle: rgba(255, 255, 255, 0.04);
+
+  /* Borders */
   --color-border: rgba(255, 255, 255, 0.08);
-  --color-card: rgba(255, 255, 255, 0.03);
+  --color-border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Cards */
+  --color-card: rgba(255, 255, 255, 0.02);
+  --color-card-hover: rgba(255, 255, 255, 0.04);
   --color-card-foreground: #FFFFFF;
+
+  /* Text hierarchy */
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-tertiary: rgba(255, 255, 255, 0.4);
+  --color-text-muted: rgba(255, 255, 255, 0.25);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Shadows - tactile depth */
+  --shadow-button: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  --shadow-button-pressed: inset 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-glow: 0 0 20px rgba(232, 90, 79, 0.3);
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
+    font-feature-settings: "ss01", "ss02", "cv01";
+  }
+
+  /* Selection */
+  ::selection {
+    background: var(--color-primary);
+    color: white;
   }
 }
 
+@layer components {
+  /* Industrial label */
+  .label {
+    @apply text-xs font-medium uppercase tracking-wider;
+    color: var(--color-text-tertiary);
+    letter-spacing: 0.1em;
+  }
+
+  /* Tactile button base */
+  .btn-tactile {
+    @apply relative inline-flex items-center justify-center font-medium transition-all;
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-button);
+  }
+
+  .btn-tactile:hover {
+    background: var(--color-card-hover);
+    border-color: var(--color-border-strong);
+  }
+
+  .btn-tactile:active {
+    box-shadow: var(--shadow-button-pressed);
+    transform: translateY(1px);
+  }
+
+  /* Industrial card */
+  .card-industrial {
+    background: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+  }
+
+  .card-industrial:hover {
+    background: var(--color-card-hover);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Stat value - big numbers */
+  .stat-value {
+    @apply font-bold tabular-nums;
+    font-feature-settings: "tnum";
+    color: var(--color-primary);
+  }
+
+  /* Progress bar track */
+  .progress-track {
+    @apply w-full overflow-hidden;
+    background: var(--color-subtle);
+    border-radius: var(--radius-full);
+    height: 6px;
+  }
+
+  .progress-fill {
+    @apply h-full transition-all duration-500 ease-out;
+    background: var(--color-primary);
+    border-radius: var(--radius-full);
+  }
+
+  /* Bento grid */
+  .bento-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  /* Glow effect */
+  .glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .glow-text {
+    text-shadow: 0 0 20px rgba(232, 90, 79, 0.5);
+  }
+}
+
+@layer utilities {
+  /* Text styles */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, var(--color-primary), #F5A088);
+  }
+
+  /* Industrial grid pattern */
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Dot pattern */
+  .dot-pattern {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+
+  /* Noise texture overlay */
+  .noise {
+    position: relative;
+  }
+
+  .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Animations */
 @keyframes count-up {
   from {
     opacity: 0;
@@ -35,12 +208,8 @@
 }
 
 @keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slide-up {
@@ -51,5 +220,23 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(232, 90, 79, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(232, 90, 79, 0.5);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
   }
 }

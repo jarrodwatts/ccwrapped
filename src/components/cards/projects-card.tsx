@@ -16,24 +16,29 @@ export function ProjectsCard({ payload }: ProjectsCardProps) {
   const totalGoals = goalEntries.reduce((sum, [, count]) => sum + count, 0);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center px-8">
-      <motion.h2
-        className="mb-2 text-center text-2xl font-semibold text-white/70"
+    <div className="relative flex h-full flex-col items-center justify-center px-6">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0 dot-pattern opacity-30" />
+
+      <motion.div
+        className="relative z-10 mb-2 text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        Your Projects
-      </motion.h2>
-      <motion.p
-        className="mb-8 text-center text-sm text-white/30"
+        <span className="label">Your Projects</span>
+      </motion.div>
+
+      <motion.div
+        className="card-industrial relative z-10 mb-8 px-6 py-3"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        {payload.projectCount} projects worked on
-      </motion.p>
+        <span className="stat-value text-2xl">{payload.projectCount}</span>
+        <span className="ml-2 text-sm text-text-secondary">projects worked on</span>
+      </motion.div>
 
-      <div className="w-full max-w-sm space-y-4">
+      <div className="relative z-10 w-full max-w-md space-y-3">
         {goalEntries.slice(0, 6).map(([category, count], i) => {
           const percent = totalGoals > 0 ? (count / totalGoals) * 100 : 0;
           return (
@@ -44,12 +49,12 @@ export function ProjectsCard({ payload }: ProjectsCardProps) {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15 * i }}
             >
-              <span className="w-20 text-right text-xs capitalize text-white/50">
+              <span className="w-24 text-right text-xs font-medium uppercase tracking-wider text-text-tertiary">
                 {category.replace(/_/g, " ")}
               </span>
-              <div className="h-4 flex-1 overflow-hidden rounded-full bg-white/[0.03]">
+              <div className="progress-track flex-1">
                 <motion.div
-                  className="h-full rounded-full bg-[#D97757]"
+                  className="progress-fill"
                   initial={{ width: 0 }}
                   animate={{ width: `${percent}%` }}
                   transition={{
@@ -59,7 +64,7 @@ export function ProjectsCard({ payload }: ProjectsCardProps) {
                   }}
                 />
               </div>
-              <span className="w-12 font-mono text-xs text-white/40">
+              <span className="w-14 font-mono text-xs text-text-muted">
                 {formatNumber(count)}
               </span>
             </motion.div>

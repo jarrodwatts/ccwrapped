@@ -94,22 +94,36 @@ export function CardStack({ payload, slug }: CardStackProps) {
   }
 
   return (
-    <div className="relative flex h-screen w-full flex-col bg-[#0A0A0A]">
-      {/* Progress bar */}
-      <div className="absolute top-0 right-0 left-0 z-20 flex gap-1 p-3">
-        {CARD_KEYS.map((key, i) => (
-          <div
-            key={key}
-            className="h-1 flex-1 overflow-hidden rounded-full bg-white/10"
-          >
-            <motion.div
-              className="h-full rounded-full bg-[#D97757]"
-              initial={false}
-              animate={{ width: i <= currentIndex ? "100%" : "0%" }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-        ))}
+    <div className="relative flex h-screen w-full flex-col bg-background">
+      {/* Header with progress */}
+      <div className="relative z-20 border-b border-border bg-background/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          <span className="font-mono text-xs text-text-muted">
+            W-{String(currentIndex + 1).padStart(2, "0")}
+          </span>
+          <span className="text-xs font-medium tracking-wider text-text-tertiary uppercase">
+            Claude Code Wrapped
+          </span>
+          <span className="font-mono text-xs text-text-muted">
+            {currentIndex + 1}/{totalCards}
+          </span>
+        </div>
+        {/* Progress bar */}
+        <div className="flex gap-1 px-4 pb-3">
+          {CARD_KEYS.map((key, i) => (
+            <div
+              key={key}
+              className="h-1 flex-1 overflow-hidden rounded-full bg-subtle"
+            >
+              <motion.div
+                className="h-full rounded-full bg-primary"
+                initial={false}
+                animate={{ width: i <= currentIndex ? "100%" : "0%" }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Card area */}
@@ -132,31 +146,33 @@ export function CardStack({ payload, slug }: CardStackProps) {
         </AnimatePresence>
       </div>
 
-      {/* Navigation hint */}
-      <div className="flex items-center justify-center gap-4 py-3 text-xs text-white/20">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            goPrev();
-          }}
-          disabled={currentIndex === 0}
-          className="px-2 py-1 disabled:opacity-20"
-        >
-          ← Prev
-        </button>
-        <span>
-          {currentIndex + 1} / {totalCards}
-        </span>
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            goNext();
-          }}
-          disabled={currentIndex === totalCards - 1}
-          className="px-2 py-1 disabled:opacity-20"
-        >
-          Next →
-        </button>
+      {/* Navigation */}
+      <div className="relative z-20 border-t border-border bg-background/80 backdrop-blur-sm">
+        <div className="flex items-center justify-between px-4 py-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goPrev();
+            }}
+            disabled={currentIndex === 0}
+            className="btn-tactile px-4 py-2 text-xs text-text-secondary disabled:opacity-30"
+          >
+            ← PREV
+          </button>
+          <span className="text-xs text-text-muted">
+            Tap or press → to continue
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              goNext();
+            }}
+            disabled={currentIndex === totalCards - 1}
+            className="btn-tactile px-4 py-2 text-xs text-text-secondary disabled:opacity-30"
+          >
+            NEXT →
+          </button>
+        </div>
       </div>
     </div>
   );

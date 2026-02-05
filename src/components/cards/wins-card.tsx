@@ -17,35 +17,37 @@ export function WinsCard({ payload }: WinsCardProps) {
   const otherCount = totalSessions - featureCount - bugFixCount;
 
   const segments = [
-    { label: "Features Built", count: featureCount, color: "#D97757" },
-    { label: "Bugs Fixed", count: bugFixCount, color: "#E8956F" },
-    { label: "Other Tasks", count: otherCount, color: "#8C3E28" },
+    { label: "Features Built", count: featureCount, primary: true },
+    { label: "Bugs Fixed", count: bugFixCount, primary: true },
+    { label: "Other Tasks", count: otherCount, primary: false },
   ].filter((s) => s.count > 0);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center px-8">
-      <motion.h2
-        className="mb-8 text-center text-2xl font-semibold text-white/70"
+    <div className="relative flex h-full flex-col items-center justify-center px-6">
+      {/* Background */}
+      <div className="pointer-events-none absolute inset-0 grid-pattern opacity-30" />
+
+      <motion.div
+        className="relative z-10 mb-8 text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
       >
-        Your Wins
-      </motion.h2>
+        <span className="label">Your Wins</span>
+      </motion.div>
 
-      {/* Donut-style visualization using stacked bars */}
-      <div className="mb-8 flex w-full max-w-xs items-center justify-center">
-        <div className="h-4 w-full overflow-hidden rounded-full bg-white/5">
+      {/* Progress bar visualization */}
+      <div className="relative z-10 mb-8 w-full max-w-sm">
+        <div className="progress-track h-4">
           <div className="flex h-full">
-            {segments.map((seg) => {
+            {segments.map((seg, i) => {
               const pct = totalSessions > 0 ? (seg.count / totalSessions) * 100 : 0;
               return (
                 <motion.div
                   key={seg.label}
-                  className="h-full"
-                  style={{ backgroundColor: seg.color }}
+                  className={`h-full ${i === 0 ? "rounded-l-full" : ""} ${i === segments.length - 1 ? "rounded-r-full" : ""} ${seg.primary ? "bg-primary" : "bg-primary/40"}`}
                   initial={{ width: 0 }}
                   animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  transition={{ duration: 0.8, ease: "easeOut", delay: i * 0.1 }}
                 />
               );
             })}
@@ -53,29 +55,26 @@ export function WinsCard({ payload }: WinsCardProps) {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="relative z-10 w-full max-w-sm space-y-3">
         {segments.map((seg, i) => (
           <motion.div
             key={seg.label}
-            className="flex items-center gap-3"
+            className="card-industrial flex items-center justify-between p-4"
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 + i * 0.15 }}
           >
-            <div
-              className="h-3 w-3 rounded-full"
-              style={{ backgroundColor: seg.color }}
-            />
-            <span className="text-sm text-white/60">{seg.label}</span>
-            <span className="font-mono text-sm font-bold text-white/80">
-              {formatNumber(seg.count)}
-            </span>
+            <div className="flex items-center gap-3">
+              <div className={`h-3 w-3 rounded-full ${seg.primary ? "bg-primary" : "bg-primary/40"}`} />
+              <span className="text-sm text-text-secondary">{seg.label}</span>
+            </div>
+            <span className="stat-value text-xl">{formatNumber(seg.count)}</span>
           </motion.div>
         ))}
       </div>
 
       <motion.p
-        className="mt-8 text-center text-sm text-white/30"
+        className="relative z-10 mt-8 text-sm text-text-muted"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1 }}
