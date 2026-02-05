@@ -7,6 +7,7 @@ import { getArchetypeDefinition } from "@/lib/archetype";
 import { formatNumber } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { TerminalLabel } from "@/components/ui/terminal-label";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ShareCardProps {
   payload: WrappedPayload;
@@ -17,6 +18,7 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
   const [copied, setCopied] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [imageCopied, setImageCopied] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const def = getArchetypeDefinition(payload.archetype);
 
   const shareUrl = `https://ccwrapped.com/w/${slug}`;
@@ -98,10 +100,14 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
         <span className="absolute -bottom-1 -left-1 font-mono text-[10px] text-text-muted z-10">+</span>
         <span className="absolute -bottom-1 -right-1 font-mono text-[10px] text-text-muted z-10">+</span>
 
+        {!imageLoaded && (
+          <Skeleton className="w-full aspect-[1200/630]" />
+        )}
         <img
           src={ogImageUrl}
           alt={`${def.name} - Claude Code Wrapped`}
-          className="w-full"
+          className={`w-full transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0 absolute"}`}
+          onLoad={() => setImageLoaded(true)}
         />
       </motion.div>
 
@@ -130,10 +136,28 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
             className="flex-1 py-3"
             onClick={handleCopyImage}
           >
-            <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            {imageCopied ? "Done" : "Copy"}
+            <motion.span
+              key={imageCopied ? "copied" : "copy"}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center"
+            >
+              {imageCopied ? (
+                <>
+                  <svg className="h-4 w-4 mr-1.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Copied!
+                </>
+              ) : (
+                <>
+                  <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  Copy
+                </>
+              )}
+            </motion.span>
           </Button>
         )}
 
