@@ -9,13 +9,14 @@ interface HeatmapCardProps {
   payload: WrappedPayload;
 }
 
-function getIntensityClass(value: number, max: number): string {
-  if (max === 0 || value === 0) return "bg-gray-3";
+function getHeatColor(value: number, max: number, isPeak: boolean): string {
+  if (isPeak) return "#E85A4F";
+  if (max === 0 || value === 0) return "#1a1a1a";
   const ratio = value / max;
-  if (ratio < 0.25) return "bg-gray-5";
-  if (ratio < 0.5) return "bg-gray-7";
-  if (ratio < 0.75) return "bg-gray-9";
-  return "bg-primary";
+  // Red shades from dark to bright
+  const shades = ["#2a1512", "#3d1f1b", "#5c2e28", "#7a3d35", "#9a4d42", "#b85a4f"];
+  const index = Math.min(Math.floor(ratio * shades.length), shades.length - 1);
+  return shades[index];
 }
 
 export function HeatmapCard({ payload }: HeatmapCardProps) {
@@ -58,10 +59,12 @@ export function HeatmapCard({ payload }: HeatmapCardProps) {
         <div className="flex gap-px border border-line p-1">
           {Array.from({ length: 24 }, (_, h) => {
             const count = hourDistribution[String(h)] ?? 0;
+            const isPeak = h === peakHour;
             return (
               <div
                 key={h}
-                className={`h-6 flex-1 transition-colors ${getIntensityClass(count, maxHour)}`}
+                className="h-6 flex-1 transition-colors"
+                style={{ backgroundColor: getHeatColor(count, maxHour, isPeak) }}
                 title={`${hourLabel(h)}: ${count} messages`}
               />
             );
@@ -93,7 +96,8 @@ export function HeatmapCard({ payload }: HeatmapCardProps) {
               <div key={d} className="flex flex-1 flex-col items-center gap-1.5">
                 <div className="flex h-20 w-full items-end border-b border-line">
                   <motion.div
-                    className={`w-full ${isPeak ? "bg-primary" : "bg-gray-7"}`}
+                    className="w-full"
+                    style={{ backgroundColor: getHeatColor(count, maxDay, isPeak) }}
                     initial={{ height: 0 }}
                     animate={{ height: `${height}%` }}
                     transition={{

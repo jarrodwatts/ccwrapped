@@ -66,6 +66,10 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
     window.open(url, "_blank", "noopener");
   }
 
+  function handleFullscreen(): void {
+    window.open(ogImageUrl, "_blank", "noopener");
+  }
+
   const supportsClipboardItem =
     typeof window !== "undefined" && "ClipboardItem" in window;
 
@@ -142,6 +146,25 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
           Share
+        </Button>
+      </motion.div>
+
+      {/* Fullscreen Button */}
+      <motion.div
+        className="relative z-10 mt-3 w-full max-w-md"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <Button
+          variant="terminal"
+          className="w-full py-2.5"
+          onClick={handleFullscreen}
+        >
+          <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+          View Fullscreen
         </Button>
       </motion.div>
 
