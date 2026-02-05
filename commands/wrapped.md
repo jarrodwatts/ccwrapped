@@ -21,6 +21,14 @@ Generate a shareable visualization of your Claude Code usage stats, patterns, an
 
 ## Instructions
 
+### Step 0: Notify the User
+
+Before doing anything else, tell the user:
+
+> "Generating your Claude Code Wrapped! I'll scan your local session data in `~/.claude/projects` to calculate your stats. This may take a moment if you have many sessions. Only aggregate numbers are collected — no code, prompts, or file paths leave your machine."
+
+Then proceed with the steps below.
+
 ### Step 1: Discover Session Files
 
 Find all session JSONL files (excluding subagent sessions):
