@@ -53,8 +53,7 @@ export function NumbersCard({ payload }: NumbersCardProps) {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        {formatNumber(payload.stats.linesChanged)} lines changed across{" "}
-        {payload.stats.days} active days
+        Across {payload.stats.days} active days
       </motion.p>
     </div>
   );
