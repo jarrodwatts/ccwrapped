@@ -32,32 +32,48 @@ find ~/.claude/projects -maxdepth 3 -name "*.jsonl" -not -name "agent-*" 2>/dev/
 ### Step 2: Parse Each Session
 
 For each `.jsonl` file, read line by line. Each line is a JSON object with these key fields:
-- `type`: "user", "assistant", "progress", "result", etc.
+- `type`: "user", "assistant", "system", "progress", "file-history-snapshot", etc.
 - `timestamp`: ISO 8601 datetime
 - `sessionId`: unique session identifier
 - `message`: contains `role` and `content`
 
+**Important:** Only "user" and "assistant" entries represent actual coding activity. Other types (system, progress, file-history-snapshot) may be logged asynchronously, sometimes days after the session ended.
+
 **Filter rules:**
 - Skip files where filename starts with `agent-` (subagent sessions)
-- Skip sessions with fewer than 2 user messages
-- Skip sessions shorter than 1 minute duration
+- Skip sessions with fewer than 2 user/assistant entries (need at least 2 to calculate duration)
+- Skip sessions shorter than 1 minute duration (after applying the gap-capped calculation)
 
 ### Step 3: Extract Per-Session Data
 
 For each valid session, extract:
 
-**Timing:**
-- `start_time`: earliest timestamp
-- `end_time`: latest timestamp
-- `duration_minutes`: (end_time - start_time) in minutes
+**Timing (IMPORTANT - use only user/assistant entries):**
+
+Only use timestamps from entries where `type` is "user" or "assistant". Do NOT include "system", "progress", or "file-history-snapshot" entries - these can be logged days after the actual session ended and will inflate duration.
+
+- `start_time`: earliest user/assistant timestamp
+- `end_time`: latest user/assistant timestamp
+- `duration_minutes`: Sum of gaps between consecutive timestamps, with each gap capped at 120 minutes (2 hours). This handles resumed sessions where someone returns days later.
+
+```
+duration = 0
+sort timestamps ascending
+for i = 1 to length:
+    gap = timestamps[i] - timestamps[i-1]
+    duration += min(gap, 120 minutes)
+```
 
 **Counts:**
 - `user_message_count`: entries where `type` = "user" and NOT `isMeta: true`
 - `tool_counts`: for assistant messages where `message.content` is an array containing `type: "tool_use"`, count each tool `name`
 
-**Git activity (from Bash tool uses with git commands):**
-- `git_commits`: count of `git commit` commands in tool results
-- `lines_changed`: approximate from `git diff --stat` outputs
+**Git activity:**
+- `git_commits`: Count Bash tool uses where `input.command` contains "git commit"
+  - Location: `message.content[].input.command` in assistant entries with `tool_use` blocks where `name` = "Bash"
+- `lines_changed`: Parse tool result stdout for git diff stats
+  - Location: `toolUseResult.stdout` in user entries (tool results)
+  - Pattern: Match `(\d+) insertions?\(\+\)` and `(\d+) deletions?\(-\)`, sum all matches
 
 ### Step 4: Aggregate All Sessions
 
