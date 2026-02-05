@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import type { WrappedPayload } from "@/lib/types";
 import { getArchetypeDefinition } from "@/lib/archetype";
 import { formatNumber } from "@/lib/format";
+import { Button } from "@/components/ui/button";
+import { TerminalLabel } from "@/components/ui/terminal-label";
 
 interface ShareCardProps {
   payload: WrappedPayload;
@@ -69,26 +71,29 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
 
   return (
     <div className="relative flex h-full flex-col items-center justify-center overflow-hidden px-4 py-6">
-      {/* Background */}
-      <div className="pointer-events-none absolute inset-0 grid-pattern opacity-20" />
-
       {/* Header */}
       <motion.div
         className="relative z-10 mb-4 text-center"
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <h2 className="text-xl font-semibold text-text-primary">Share Your Card</h2>
-        <p className="mt-1 text-sm text-text-tertiary">Download or share your Claude Code Wrapped</p>
+        <TerminalLabel variant="bracket">SHARE</TerminalLabel>
+        <p className="mt-3 text-sm text-text-tertiary">Download or share your wrapped</p>
       </motion.div>
 
       {/* OG Image Preview */}
       <motion.div
-        className="relative z-10 w-full max-w-lg overflow-hidden rounded-xl border border-border shadow-lg"
-        initial={{ opacity: 0, scale: 0.95 }}
+        className="relative z-10 w-full max-w-md overflow-hidden border border-line"
+        initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.1, duration: 0.4 }}
+        transition={{ delay: 0.1, duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
       >
+        {/* Corner markers */}
+        <span className="absolute -top-1 -left-1 font-mono text-[10px] text-text-muted z-10">+</span>
+        <span className="absolute -top-1 -right-1 font-mono text-[10px] text-text-muted z-10">+</span>
+        <span className="absolute -bottom-1 -left-1 font-mono text-[10px] text-text-muted z-10">+</span>
+        <span className="absolute -bottom-1 -right-1 font-mono text-[10px] text-text-muted z-10">+</span>
+
         <img
           src={ogImageUrl}
           alt={`${def.name} - Claude Code Wrapped`}
@@ -98,61 +103,64 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
 
       {/* Action Buttons */}
       <motion.div
-        className="relative z-10 mt-6 flex w-full max-w-lg gap-3"
-        initial={{ opacity: 0, y: 20 }}
+        className="relative z-10 mt-6 flex w-full max-w-md gap-2"
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.25 }}
       >
-        <button
+        <Button
+          variant="terminal"
+          className="flex-1 py-3"
           onClick={handleDownloadImage}
           disabled={downloading}
-          className="btn-tactile flex flex-1 items-center justify-center gap-2 py-4 text-sm font-medium text-text-secondary hover:text-text-primary disabled:opacity-50"
         >
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          {downloading ? "Saving..." : "Save Image"}
-        </button>
+          {downloading ? "..." : "Save"}
+        </Button>
 
         {supportsClipboardItem && (
-          <button
+          <Button
+            variant="terminal"
+            className="flex-1 py-3"
             onClick={handleCopyImage}
-            className="btn-tactile flex flex-1 items-center justify-center gap-2 py-4 text-sm font-medium text-text-secondary hover:text-text-primary"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
             </svg>
-            {imageCopied ? "Copied!" : "Copy"}
-          </button>
+            {imageCopied ? "Done" : "Copy"}
+          </Button>
         )}
 
-        <button
+        <Button
+          variant="default"
+          className="flex-1 py-3"
           onClick={handleShareTwitter}
-          className="btn-tactile flex flex-1 items-center justify-center gap-2 bg-primary py-4 text-sm font-medium text-white hover:bg-primary-hover"
         >
-          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+          <svg className="h-4 w-4 mr-1.5" viewBox="0 0 24 24" fill="currentColor">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
           </svg>
           Share
-        </button>
+        </Button>
       </motion.div>
 
       {/* Copy link */}
       <motion.button
         onClick={handleCopyLink}
-        className="relative z-10 mt-4 text-sm text-text-muted hover:text-text-secondary"
+        className="relative z-10 mt-4 font-mono text-xs text-text-muted hover:text-text-secondary transition-colors"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.4 }}
       >
-        {copied ? "Link copied!" : "Copy link to clipboard"}
+        {copied ? "// link copied!" : "// copy link"}
       </motion.button>
 
       <motion.p
-        className="relative z-10 mt-6 text-xs text-text-muted"
+        className="relative z-10 mt-6 font-mono text-[10px] text-text-muted"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
+        transition={{ delay: 0.5 }}
       >
         ccwrapped.com
       </motion.p>

@@ -13,6 +13,7 @@ import { StreakCard } from "@/components/cards/streak-card";
 import { ArchetypeCard } from "@/components/cards/archetype-card";
 import { HighlightsCard } from "@/components/cards/highlights-card";
 import { ShareCard } from "@/components/cards/share-card";
+import { Button } from "@/components/ui/button";
 
 interface CardStackProps {
   payload: WrappedPayload;
@@ -95,31 +96,32 @@ export function CardStack({ payload, slug }: CardStackProps) {
 
   return (
     <div className="relative flex h-screen w-full flex-col bg-background">
+      {/* Structural grid background */}
+      <div className="pointer-events-none fixed inset-0 grid-pattern opacity-20" />
+
       {/* Header with progress */}
-      <div className="relative z-20 border-b border-border bg-background/80 backdrop-blur-sm">
+      <div className="relative z-20 border-b border-line bg-background/90 backdrop-blur-sm">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="font-mono text-xs text-text-muted">
-            W-{String(currentIndex + 1).padStart(2, "0")}
+            {String(currentIndex + 1).padStart(2, "0")}
           </span>
-          <span className="text-xs font-medium tracking-wider text-text-tertiary uppercase">
-            Claude Code Wrapped
-          </span>
+          <span className="label">WRAPPED</span>
           <span className="font-mono text-xs text-text-muted">
             {currentIndex + 1}/{totalCards}
           </span>
         </div>
-        {/* Progress bar */}
-        <div className="flex gap-1 px-4 pb-3">
+        {/* Progress bar - monochrome with coral for current */}
+        <div className="flex gap-px px-4 pb-3">
           {CARD_KEYS.map((key, i) => (
             <div
               key={key}
-              className="h-1 flex-1 overflow-hidden rounded-full bg-subtle"
+              className="h-0.5 flex-1 overflow-hidden bg-gray-4"
             >
               <motion.div
-                className="h-full rounded-full bg-primary"
+                className={`h-full ${i === currentIndex ? "bg-primary" : "bg-gray-8"}`}
                 initial={false}
                 animate={{ width: i <= currentIndex ? "100%" : "0%" }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               />
             </div>
           ))}
@@ -136,10 +138,14 @@ export function CardStack({ payload, slug }: CardStackProps) {
             key={CARD_KEYS[currentIndex]}
             className="absolute inset-0"
             custom={direction}
-            initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
+            initial={{ opacity: 0, x: direction > 0 ? 60 : -60 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            exit={{ opacity: 0, x: direction > 0 ? -60 : 60 }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 35,
+            }}
           >
             {renderCard(CARD_KEYS[currentIndex])}
           </motion.div>
@@ -147,31 +153,33 @@ export function CardStack({ payload, slug }: CardStackProps) {
       </div>
 
       {/* Navigation */}
-      <div className="relative z-20 border-t border-border bg-background/80 backdrop-blur-sm">
+      <div className="relative z-20 border-t border-line bg-background/90 backdrop-blur-sm">
         <div className="flex items-center justify-between px-4 py-3">
-          <button
+          <Button
+            variant="terminal"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               goPrev();
             }}
             disabled={currentIndex === 0}
-            className="btn-tactile px-4 py-2 text-xs text-text-secondary disabled:opacity-30"
           >
             ← PREV
-          </button>
-          <span className="text-xs text-text-muted">
-            Tap or press → to continue
+          </Button>
+          <span className="font-mono text-xs text-text-muted">
+            tap or →
           </span>
-          <button
+          <Button
+            variant="terminal"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               goNext();
             }}
             disabled={currentIndex === totalCards - 1}
-            className="btn-tactile px-4 py-2 text-xs text-text-secondary disabled:opacity-30"
           >
             NEXT →
-          </button>
+          </Button>
         </div>
       </div>
     </div>
