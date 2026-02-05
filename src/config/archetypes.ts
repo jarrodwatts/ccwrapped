@@ -1,95 +1,95 @@
 import type { Archetype } from "@/lib/types";
 
-export interface ArchetypeConfig {
+export interface ArchetypeDefinition {
   name: string;
   emoji: string;
   description: string;
   shortDescription: string;
 }
 
-export const ARCHETYPES: Record<Archetype, ArchetypeConfig> = {
+export const ARCHETYPE_DEFINITIONS: Record<Archetype, ArchetypeDefinition> = {
   night_owl: {
     name: "The Night Owl",
     emoji: "🦉",
     description:
-      "While the world sleeps, you code. Over 40% of your sessions happen between 10pm and 4am.",
+      "You thrive when the world sleeps. Most of your coding happens after 10pm — the quiet hours are your productive hours.",
     shortDescription: "Codes when the world sleeps",
   },
   marathoner: {
     name: "The Marathoner",
     emoji: "🏃",
     description:
-      "You don't do short sessions. Your average session is 45+ minutes, with deep dives lasting hours.",
-    shortDescription: "Long sessions, deep focus",
+      "You don't do quick fixes. Your sessions are deep, focused, and long — often stretching past the 3-hour mark.",
+    shortDescription: "Deep, focused sessions",
   },
   sprinter: {
     name: "The Sprinter",
     emoji: "⚡",
     description:
-      "Quick in, quick out. 100+ sessions averaging under 10 minutes each. Efficiency is your superpower.",
-    shortDescription: "Fast, focused, frequent",
+      "Quick in, quick out. You fire off rapid sessions, each one surgical and precise. Quantity and speed are your game.",
+    shortDescription: "Rapid-fire sessions",
   },
   bug_hunter: {
     name: "The Bug Hunter",
     emoji: "🐛",
     description:
-      "You have a nose for bugs. Over 40% of your sessions are dedicated to fixing and debugging.",
-    shortDescription: "Born to debug",
+      "You're drawn to the broken things. Most of your sessions are fixing, debugging, and squashing bugs.",
+    shortDescription: "Drawn to fixing what's broken",
   },
   builder: {
     name: "The Builder",
     emoji: "🏗️",
     description:
-      "You ship features. Over 40% of your sessions are about creating something new.",
-    shortDescription: "Always building something new",
+      "You're always creating something new. Features, components, systems — you build more than you fix.",
+    shortDescription: "Always creating something new",
   },
   tool_master: {
     name: "The Tool Master",
     emoji: "🛠️",
     description:
-      "You've used 15+ distinct tools. From Bash to LSP to Task agents — full toolkit mastery.",
-    shortDescription: "Masters every tool available",
+      "You wield the full arsenal. With 15+ distinct tools in your repertoire, there's nothing you can't automate.",
+    shortDescription: "Wields the full tool arsenal",
   },
   delegator: {
     name: "The Delegator",
     emoji: "👔",
     description:
-      "You know how to delegate. Heavy Task and subagent usage shows you think in orchestration.",
-    shortDescription: "Orchestrates, doesn't just execute",
+      "Why do it yourself when you can orchestrate? You're a power user of subagents and parallel task execution.",
+    shortDescription: "Orchestrates agents like a boss",
   },
   streak_master: {
     name: "The Streak Master",
     emoji: "🔥",
     description:
-      "Consistency is your game. A 14+ day usage streak — Claude Code is part of your daily routine.",
-    shortDescription: "Unstoppable daily consistency",
+      "Consistency is your superpower. You've maintained a coding streak that would make most developers jealous.",
+    shortDescription: "Consistency is the superpower",
   },
   polyglot: {
     name: "The Polyglot",
     emoji: "🌍",
     description:
-      "You work across 5+ projects with substantial usage in each. Variety keeps things interesting.",
-    shortDescription: "Works across many projects",
+      "You don't stick to one project. Your coding spans across many repositories and problem domains.",
+    shortDescription: "Spans many projects and domains",
   },
   deep_diver: {
     name: "The Deep Diver",
     emoji: "🤿",
     description:
-      "80%+ of your messages are in a single project. Total commitment to one codebase.",
-    shortDescription: "Goes deep, not wide",
+      "You go deep, not wide. The vast majority of your work is focused on a single project — total immersion.",
+    shortDescription: "Total immersion in one project",
   },
   explorer: {
     name: "The Explorer",
     emoji: "🔍",
     description:
-      "Heavy grep, glob, and read usage with many short sessions. Constantly navigating codebases.",
-    shortDescription: "Always exploring and understanding",
+      "You read more than you write. Your sessions are full of searching, reading, and understanding before acting.",
+    shortDescription: "Reads before writing",
   },
   pair_programmer: {
     name: "The Pair Programmer",
-    emoji: "👥",
+    emoji: "👯",
     description:
-      "High messages per session with lots of back-and-forth. Claude Code is your true collaborator.",
-    shortDescription: "Claude is your coding partner",
+      "You and Claude are a team. High back-and-forth, long conversations — you treat AI as a true collaborator.",
+    shortDescription: "Claude is the other half",
   },
 };

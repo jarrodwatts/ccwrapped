@@ -1,93 +1,80 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { CardProps } from "@/lib/types";
-import { buildHeatmap, getIntensityLevel } from "@/lib/heatmap";
-import { formatDate } from "@/lib/format";
+import type { WrappedPayload } from "@/lib/types";
+import { formatNumber } from "@/lib/format";
 
-const INTENSITY_COLORS = [
-  "bg-white/5",
-  "bg-[#D97757]/25",
-  "bg-[#D97757]/50",
-  "bg-[#D97757]/75",
-  "bg-[#D97757]",
-] as const;
+interface StreakCardProps {
+  payload: WrappedPayload;
+}
 
-export function StreakCard({ payload }: CardProps) {
-  const { highlights, timePatterns } = payload;
-  const heatmapDays = buildHeatmap(timePatterns.dailyActivity, 26);
-  const maxCount = Math.max(...heatmapDays.map((d) => d.count), 1);
-
-  const weeks = Math.ceil(heatmapDays.length / 7);
+export function StreakCard({ payload }: StreakCardProps) {
+  const { current, longest, totalActiveDays } = payload.streaks;
+  const longestSessionHours = Math.round(
+    payload.highlights.longestSessionMinutes / 60
+  );
+  const longestSessionMins =
+    payload.highlights.longestSessionMinutes % 60;
 
   return (
-    <div className="flex flex-col items-center gap-8 py-8">
+    <div className="flex h-full flex-col items-center justify-center px-8">
       <motion.h2
+        className="mb-10 text-center text-2xl font-semibold text-white/70"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-sm font-medium tracking-[0.2em] text-[#D97757] uppercase"
       >
-        Streak
+        Streaks & Endurance
       </motion.h2>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2, type: "spring" }}
-        className="flex flex-col items-center gap-2"
-      >
-        <span className="text-7xl font-bold tracking-tight text-white">
-          {highlights.longestStreak}
-        </span>
-        <span className="text-lg text-white/50">day longest streak</span>
-      </motion.div>
+      <div className="grid w-full max-w-sm grid-cols-2 gap-6">
+        <motion.div
+          className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] p-5"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <span className="text-4xl font-bold text-[#D97757]">{longest}</span>
+          <span className="mt-1 text-xs text-white/40">Longest Streak</span>
+          <span className="text-[10px] text-white/20">consecutive days</span>
+        </motion.div>
 
-      {/* Mini heatmap */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="flex flex-col gap-[3px]"
-      >
-        {Array.from({ length: 7 }).map((_, row) => (
-          <div key={row} className="flex gap-[3px]">
-            {Array.from({ length: weeks }).map((_, col) => {
-              const idx = col * 7 + row;
-              const day = heatmapDays[idx];
-              if (!day) return <div key={col} className="h-3 w-3" />;
-              const level = getIntensityLevel(day.count, maxCount);
-              return (
-                <div
-                  key={col}
-                  className={`h-3 w-3 rounded-[2px] ${INTENSITY_COLORS[level]}`}
-                  title={`${day.date}: ${day.count} sessions`}
-                />
-              );
-            })}
-          </div>
-        ))}
-      </motion.div>
+        <motion.div
+          className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] p-5"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.35 }}
+        >
+          <span className="text-4xl font-bold text-[#E8956F]">{current}</span>
+          <span className="mt-1 text-xs text-white/40">Current Streak</span>
+          <span className="text-[10px] text-white/20">days</span>
+        </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-        className="flex items-center gap-4 text-sm text-white/40"
-      >
-        <span>
-          Busiest day:{" "}
-          <span className="font-medium text-white/70">
-            {formatDate(highlights.busiestDay)}
+        <motion.div
+          className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] p-5"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          <span className="text-4xl font-bold text-white/80">
+            {formatNumber(totalActiveDays)}
           </span>
-        </span>
-        <span>·</span>
-        <span>
-          <span className="font-medium text-white/70">
-            {highlights.busiestDayCount}
-          </span>{" "}
-          sessions
-        </span>
-      </motion.div>
+          <span className="mt-1 text-xs text-white/40">Active Days</span>
+          <span className="text-[10px] text-white/20">total</span>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] p-5"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.65 }}
+        >
+          <span className="text-4xl font-bold text-white/80">
+            {longestSessionHours}h{longestSessionMins}m
+          </span>
+          <span className="mt-1 text-xs text-white/40">Longest Session</span>
+          <span className="text-[10px] text-white/20">marathon</span>
+        </motion.div>
+      </div>
     </div>
   );
 }

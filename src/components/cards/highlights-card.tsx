@@ -1,79 +1,66 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { CardProps } from "@/lib/types";
-import { formatDate } from "@/lib/format";
+import type { WrappedPayload } from "@/lib/types";
+import { formatDate, formatNumber } from "@/lib/format";
 
-interface HighlightItemProps {
-  label: string;
-  value: string;
-  delay: number;
+interface HighlightsCardProps {
+  payload: WrappedPayload;
 }
 
-function HighlightItem({ label, value, delay }: HighlightItemProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay, type: "spring", stiffness: 200 }}
-      className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] px-5 py-4"
-    >
-      <span className="text-sm text-white/50">{label}</span>
-      <span className="font-bold text-white">{value}</span>
-    </motion.div>
-  );
-}
+export function HighlightsCard({ payload }: HighlightsCardProps) {
+  const { highlights } = payload;
 
-export function HighlightsCard({ payload }: CardProps) {
-  const { highlights, stats } = payload;
-
-  const topTool = Object.entries(payload.tools)
-    .sort(([, a], [, b]) => b - a)[0];
-
-  const items: { label: string; value: string }[] = [
+  const items = [
     {
       label: "Busiest Day",
-      value: `${formatDate(highlights.busiestDay)} (${highlights.busiestDayCount} sessions)`,
+      value: formatDate(highlights.busiestDay),
+      detail: `${formatNumber(highlights.busiestDayMessages)} messages`,
+    },
+    {
+      label: "Top Tool",
+      value: highlights.topToolName,
+      detail: `used ${formatNumber(highlights.topToolCount)} times`,
+    },
+    {
+      label: "Rarest Tool",
+      value: highlights.rarestTool,
+      detail: "barely touched",
     },
     {
       label: "Longest Session",
-      value: `${Math.round(highlights.longestSessionMinutes)} min`,
-    },
-    {
-      label: "Most Used Tool",
-      value: topTool ? `${topTool[0]} (${topTool[1].toLocaleString()}×)` : "—",
-    },
-    {
-      label: "Total Messages",
-      value: stats.messages.toLocaleString(),
+      value: `${Math.floor(highlights.longestSessionMinutes / 60)}h ${highlights.longestSessionMinutes % 60}m`,
+      detail: "deep work",
     },
   ];
 
-  if (highlights.rareToolName) {
-    items.push({
-      label: "Rarest Tool",
-      value: `${highlights.rareToolName} (${highlights.rareToolCount ?? 0}×)`,
-    });
-  }
-
   return (
-    <div className="flex flex-col gap-6 py-8">
+    <div className="flex h-full flex-col items-center justify-center px-8">
       <motion.h2
+        className="mb-10 text-center text-2xl font-semibold text-white/70"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-center text-sm font-medium tracking-[0.2em] text-[#D97757] uppercase"
       >
         Highlights Reel
       </motion.h2>
 
-      <div className="flex flex-col gap-3">
+      <div className="w-full max-w-sm space-y-4">
         {items.map((item, i) => (
-          <HighlightItem
+          <motion.div
             key={item.label}
-            label={item.label}
-            value={item.value}
-            delay={0.2 + i * 0.1}
-          />
+            className="flex items-center gap-4 rounded-lg border border-white/5 bg-white/[0.02] px-5 py-4"
+            initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 + i * 0.15 }}
+          >
+            <div className="flex-1">
+              <p className="text-xs text-white/30">{item.label}</p>
+              <p className="text-lg font-semibold text-white/90">
+                {item.value}
+              </p>
+            </div>
+            <span className="text-xs text-white/30">{item.detail}</span>
+          </motion.div>
         ))}
       </div>
     </div>

@@ -1,60 +1,54 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { CardProps } from "@/lib/types";
+import type { WrappedPayload } from "@/lib/types";
 import { formatDate } from "@/lib/format";
 
-export function IntroCard({ payload }: CardProps) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-8 py-12 text-center">
-      {/* Glow background */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute top-1/4 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-[#D97757]/10 blur-[100px]" />
-      </div>
+interface IntroCardProps {
+  payload: WrappedPayload;
+}
 
+export function IntroCard({ payload }: IntroCardProps) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center px-8 text-center">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="text-sm font-medium tracking-[0.2em] text-white/40 uppercase"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
       >
-        Your Year with Claude Code
+        <div className="mb-2 font-mono text-sm tracking-widest text-white/40 uppercase">
+          Your
+        </div>
+        <h1 className="bg-gradient-to-r from-[#D97757] to-[#E8956F] bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl">
+          Claude Code
+        </h1>
+        <h2 className="mt-1 text-4xl font-bold text-white sm:text-5xl">
+          Wrapped
+        </h2>
       </motion.div>
 
-      <motion.h1
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
-        className="text-5xl font-bold tracking-tight text-white sm:text-6xl"
+      <motion.div
+        className="mt-8 space-y-2 text-white/50"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
       >
-        Wrapped
-      </motion.h1>
+        <p className="text-lg">
+          {formatDate(payload.highlights.firstSessionDate)} — Present
+        </p>
+        <p className="font-mono text-sm text-white/30">
+          {payload.stats.sessions.toLocaleString()} sessions analyzed
+        </p>
+      </motion.div>
 
       <motion.div
+        className="mt-12 text-sm text-white/30"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="flex flex-col items-center gap-3"
       >
-        <p className="text-lg text-white/50">
-          {formatDate(payload.highlights.firstSessionDate)} — Present
-        </p>
-        <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2">
-          <div className="h-2 w-2 animate-pulse rounded-full bg-[#D97757]" />
-          <span className="text-sm font-medium text-white/70">
-            {payload.stats.sessions.toLocaleString()} sessions
-          </span>
-        </div>
+        Press arrow key or click to continue
       </motion.div>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        className="text-sm text-white/30"
-      >
-        Tap or press → to continue
-      </motion.p>
     </div>
   );
 }

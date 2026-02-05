@@ -1,4 +1,4 @@
-import { ARCHETYPES } from "@/config/archetypes";
+import { ARCHETYPE_DEFINITIONS } from "@/config/archetypes";
 import type { Archetype } from "@/lib/types";
 
 const FEATURED_ARCHETYPES: Archetype[] = [
@@ -66,7 +66,7 @@ export default function Home() {
 
           <div className="flex flex-col items-center gap-3">
             <code className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-mono text-sm text-white/80">
-              /install jarrodwatts/claude-code-wrapped-plugin
+              /install jarrodwatts/claude-code-wrapped
             </code>
             <span className="text-xs text-white/30">
               Then type <code className="text-white/50">/wrapped</code> in any
@@ -83,7 +83,7 @@ export default function Home() {
 
           <div className="grid gap-3 sm:grid-cols-2">
             {FEATURED_ARCHETYPES.map((key) => {
-              const a = ARCHETYPES[key];
+              const a = ARCHETYPE_DEFINITIONS[key];
               return (
                 <div
                   key={key}
@@ -112,7 +112,7 @@ export default function Home() {
             patterns. No code, prompts, file paths, or project names ever leave
             your machine. The plugin is{" "}
             <a
-              href="https://github.com/jarrodwatts/claude-code-wrapped-plugin"
+              href="https://github.com/jarrodwatts/claude-code-wrapped"
               className="text-[#D97757] hover:underline"
               target="_blank"
               rel="noopener noreferrer"

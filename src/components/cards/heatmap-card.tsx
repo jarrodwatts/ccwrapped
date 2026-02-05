@@ -1,119 +1,117 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { CardProps } from "@/lib/types";
-import { hourLabel } from "@/lib/format";
+import type { WrappedPayload } from "@/lib/types";
+import { hourLabel, dayName } from "@/lib/format";
 
-const INTENSITY_COLORS = [
-  "bg-white/5",
-  "bg-[#D97757]/25",
-  "bg-[#D97757]/50",
-  "bg-[#D97757]/75",
-  "bg-[#D97757]",
-] as const;
-
-function getIntensity(count: number, max: number): 0 | 1 | 2 | 3 | 4 {
-  if (count === 0) return 0;
-  if (max === 0) return 1;
-  const ratio = count / max;
-  if (ratio > 0.75) return 4;
-  if (ratio > 0.5) return 3;
-  if (ratio > 0.25) return 2;
-  return 1;
+interface HeatmapCardProps {
+  payload: WrappedPayload;
 }
 
-export function HeatmapCard({ payload }: CardProps) {
-  const { hourDistribution, dayOfWeekDistribution } = payload.timePatterns;
+function getIntensityClass(value: number, max: number): string {
+  if (max === 0 || value === 0) return "bg-white/[0.03]";
+  const ratio = value / max;
+  if (ratio < 0.25) return "bg-[#D97757]/20";
+  if (ratio < 0.5) return "bg-[#D97757]/40";
+  if (ratio < 0.75) return "bg-[#D97757]/60";
+  return "bg-[#D97757]";
+}
 
-  const hours = Array.from({ length: 24 }, (_, h) => ({
-    hour: h,
-    count: hourDistribution[String(h)] ?? 0,
-  }));
-  const maxHour = Math.max(...hours.map((h) => h.count), 1);
+export function HeatmapCard({ payload }: HeatmapCardProps) {
+  const { hourDistribution, dayOfWeekDistribution, peakHour, peakDay } =
+    payload.timePatterns;
 
-  const peakHour = hours.reduce((a, b) => (b.count > a.count ? b : a));
-
-  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-  const days = dayLabels.map((label, i) => ({
-    label,
-    count: dayOfWeekDistribution[String(i)] ?? 0,
-  }));
-  const maxDay = Math.max(...days.map((d) => d.count), 1);
+  const maxHour = Math.max(
+    ...Object.values(hourDistribution),
+    1
+  );
+  const maxDay = Math.max(
+    ...Object.values(dayOfWeekDistribution),
+    1
+  );
 
   return (
-    <div className="flex flex-col gap-6 py-8">
+    <div className="flex h-full flex-col items-center justify-center px-6">
       <motion.h2
+        className="mb-2 text-center text-2xl font-semibold text-white/70"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-center text-sm font-medium tracking-[0.2em] text-[#D97757] uppercase"
       >
         When You Code
       </motion.h2>
-
-      <motion.div
+      <motion.p
+        className="mb-6 text-center text-sm text-white/30"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="text-center text-lg text-white/50"
       >
-        Peak hour:{" "}
-        <span className="font-bold text-white">
-          {hourLabel(peakHour.hour)}
-        </span>
-      </motion.div>
+        Peak: {hourLabel(peakHour)} on {dayName(peakDay)}s
+      </motion.p>
 
       {/* Hour distribution */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        className="mb-6 w-full max-w-sm"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="flex flex-col gap-2"
       >
-        <span className="text-xs font-medium tracking-widest text-white/30 uppercase">
-          By Hour
-        </span>
-        <div className="flex items-end gap-[2px]">
-          {hours.map(({ hour, count }) => (
-            <div key={hour} className="flex flex-1 flex-col items-center gap-1">
+        <p className="mb-2 text-xs text-white/30">By hour</p>
+        <div className="flex gap-[2px]">
+          {Array.from({ length: 24 }, (_, h) => {
+            const count = hourDistribution[String(h)] ?? 0;
+            return (
               <div
-                className="w-full rounded-sm bg-[#D97757] transition-all"
-                style={{
-                  height: `${Math.max(2, (count / maxHour) * 60)}px`,
-                  opacity: count === 0 ? 0.1 : 0.3 + (count / maxHour) * 0.7,
-                }}
+                key={h}
+                className={`h-8 flex-1 rounded-sm ${getIntensityClass(count, maxHour)}`}
+                title={`${hourLabel(h)}: ${count} messages`}
               />
-              {hour % 6 === 0 && (
-                <span className="text-[10px] text-white/30">
-                  {hourLabel(hour)}
-                </span>
-              )}
-            </div>
-          ))}
+            );
+          })}
+        </div>
+        <div className="mt-1 flex justify-between text-[10px] text-white/20">
+          <span>12am</span>
+          <span>6am</span>
+          <span>12pm</span>
+          <span>6pm</span>
+          <span>12am</span>
         </div>
       </motion.div>
 
-      {/* Day of week */}
+      {/* Day distribution */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
+        className="w-full max-w-sm"
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="flex flex-col gap-2"
       >
-        <span className="text-xs font-medium tracking-widest text-white/30 uppercase">
-          By Day
-        </span>
+        <p className="mb-2 text-xs text-white/30">By day of week</p>
         <div className="flex gap-2">
-          {days.map(({ label, count }) => (
-            <div
-              key={label}
-              className="flex flex-1 flex-col items-center gap-2"
-            >
+          {Array.from({ length: 7 }, (_, d) => {
+            const count = dayOfWeekDistribution[String(d)] ?? 0;
+            const height = maxDay > 0 ? (count / maxDay) * 80 + 20 : 20;
+            return (
               <div
-                className={`h-10 w-full rounded-lg ${INTENSITY_COLORS[getIntensity(count, maxDay)]}`}
-              />
-              <span className="text-xs text-white/40">{label}</span>
-            </div>
-          ))}
+                key={d}
+                className="flex flex-1 flex-col items-center gap-1"
+              >
+                <div className="flex h-24 items-end">
+                  <motion.div
+                    className="w-full rounded-t-sm bg-[#D97757]"
+                    initial={{ height: 0 }}
+                    animate={{ height: `${height}%` }}
+                    transition={{
+                      delay: 0.6 + d * 0.05,
+                      duration: 0.4,
+                      ease: "easeOut",
+                    }}
+                  />
+                </div>
+                <span className="text-[10px] text-white/30">
+                  {dayName(d)}
+                </span>
+              </div>
+            );
+          })}
         </div>
       </motion.div>
     </div>

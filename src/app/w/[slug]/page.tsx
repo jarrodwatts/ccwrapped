@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { kv } from "@vercel/kv";
-import type { StoredWrapped } from "@/lib/types";
-import { ARCHETYPES } from "@/config/archetypes";
+import { getWrapped } from "@/lib/storage";
+import { ARCHETYPE_DEFINITIONS } from "@/config/archetypes";
 import { CardStack } from "@/components/card-stack";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-}
-
-async function getWrapped(slug: string): Promise<StoredWrapped | null> {
-  const raw = await kv.get<string>(`wrapped:${slug}`);
-  if (!raw) return null;
-  return typeof raw === "string" ? JSON.parse(raw) : raw;
 }
 
 export async function generateMetadata({
@@ -25,11 +18,11 @@ export async function generateMetadata({
     return { title: "Not Found" };
   }
 
-  const { payload } = stored;
-  const archetype = ARCHETYPES[payload.archetype];
+  const def = ARCHETYPE_DEFINITIONS[stored.payload.archetype];
+  const { stats, streaks } = stored.payload;
 
-  const title = `${archetype.emoji} ${archetype.name} — Claude Code Wrapped`;
-  const description = `${payload.stats.sessions.toLocaleString()} sessions · ${payload.stats.messages.toLocaleString()} messages · ${payload.highlights.longestStreak}-day streak`;
+  const title = `${def.name} — Claude Code Wrapped`;
+  const description = `${stats.sessions.toLocaleString()} sessions · ${stats.messages.toLocaleString()} messages · ${streaks.longest}-day streak`;
 
   return {
     title,
@@ -38,7 +31,6 @@ export async function generateMetadata({
       title,
       description,
       images: [`/api/og/${slug}`],
-      type: "website",
     },
     twitter: {
       card: "summary_large_image",

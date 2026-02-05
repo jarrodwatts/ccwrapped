@@ -1,111 +1,87 @@
 "use client";
 
 import { motion } from "motion/react";
-import type { CardProps } from "@/lib/types";
+import type { WrappedPayload } from "@/lib/types";
+import { formatNumber } from "@/lib/format";
 
-const GOAL_LABELS: Record<string, string> = {
-  bug_fix: "Bug Fixes",
-  feature: "New Features",
-  refactor: "Refactors",
-  devops: "DevOps",
-  docs: "Documentation",
-  explore: "Exploration",
-  test: "Testing",
-  implement_feature: "Features",
-  build: "Building",
-  create: "Creating",
-  debug: "Debugging",
-  other: "Other",
-};
+interface WinsCardProps {
+  payload: WrappedPayload;
+}
 
-const GOAL_COLORS = [
-  "#D97757",
-  "#E89B7F",
-  "#B85C3D",
-  "#F0C4B0",
-  "#A34F35",
-  "#D4887A",
-  "#C4694C",
-  "#E8AE9B",
-];
+export function WinsCard({ payload }: WinsCardProps) {
+  const goals = payload.goals;
+  const totalSessions = Object.values(goals).reduce((a, b) => a + b, 0);
 
-export function WinsCard({ payload }: CardProps) {
-  const goals = Object.entries(payload.goals)
-    .filter(([, count]) => count > 0)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 6);
+  const featureCount = goals.feature ?? 0;
+  const bugFixCount = goals.bug_fix ?? 0;
+  const otherCount = totalSessions - featureCount - bugFixCount;
 
-  const totalGoals = goals.reduce((sum, [, count]) => sum + count, 0);
+  const segments = [
+    { label: "Features Built", count: featureCount, color: "#D97757" },
+    { label: "Bugs Fixed", count: bugFixCount, color: "#E8956F" },
+    { label: "Other Tasks", count: otherCount, color: "#8C3E28" },
+  ].filter((s) => s.count > 0);
 
   return (
-    <div className="flex flex-col items-center gap-8 py-8">
+    <div className="flex h-full flex-col items-center justify-center px-8">
       <motion.h2
+        className="mb-8 text-center text-2xl font-semibold text-white/70"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-sm font-medium tracking-[0.2em] text-[#D97757] uppercase"
       >
         Your Wins
       </motion.h2>
 
-      {goals.length > 0 ? (
-        <>
-          {/* Stacked bar */}
-          <motion.div
-            initial={{ opacity: 0, scaleX: 0 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="flex h-6 w-full overflow-hidden rounded-full"
-            style={{ transformOrigin: "left" }}
-          >
-            {goals.map(([key, count], i) => (
-              <div
-                key={key}
-                style={{
-                  width: `${(count / totalGoals) * 100}%`,
-                  backgroundColor: GOAL_COLORS[i % GOAL_COLORS.length],
-                }}
-              />
-            ))}
-          </motion.div>
-
-          {/* Legend */}
-          <div className="grid w-full grid-cols-2 gap-3">
-            {goals.map(([key, count], i) => (
-              <motion.div
-                key={key}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3"
-              >
-                <div
-                  className="h-3 w-3 shrink-0 rounded-full"
-                  style={{
-                    backgroundColor: GOAL_COLORS[i % GOAL_COLORS.length],
-                  }}
+      {/* Donut-style visualization using stacked bars */}
+      <div className="mb-8 flex w-full max-w-xs items-center justify-center">
+        <div className="h-4 w-full overflow-hidden rounded-full bg-white/5">
+          <div className="flex h-full">
+            {segments.map((seg) => {
+              const pct = totalSessions > 0 ? (seg.count / totalSessions) * 100 : 0;
+              return (
+                <motion.div
+                  key={seg.label}
+                  className="h-full"
+                  style={{ backgroundColor: seg.color }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
                 />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-white/80">
-                    {GOAL_LABELS[key] ?? key}
-                  </span>
-                  <span className="text-xs text-white/40">
-                    {count} sessions · {Math.round((count / totalGoals) * 100)}%
-                  </span>
-                </div>
-              </motion.div>
-            ))}
+              );
+            })}
           </div>
-        </>
-      ) : (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-center text-white/40"
-        >
-          No goal data available yet
-        </motion.p>
-      )}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {segments.map((seg, i) => (
+          <motion.div
+            key={seg.label}
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 + i * 0.15 }}
+          >
+            <div
+              className="h-3 w-3 rounded-full"
+              style={{ backgroundColor: seg.color }}
+            />
+            <span className="text-sm text-white/60">{seg.label}</span>
+            <span className="font-mono text-sm font-bold text-white/80">
+              {formatNumber(seg.count)}
+            </span>
+          </motion.div>
+        ))}
+      </div>
+
+      <motion.p
+        className="mt-8 text-center text-sm text-white/30"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        {formatNumber(totalSessions)} sessions classified
+      </motion.p>
     </div>
   );
 }
