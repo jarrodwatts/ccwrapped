@@ -23,7 +23,7 @@ Inside a Claude Code instance, run the following commands:
 
 **Step 3: Generate your wrapped**
 ```
-/wrapped
+/ccwrapped:wrapped
 ```
 
 Done! Your personalized wrapped page opens automatically.
