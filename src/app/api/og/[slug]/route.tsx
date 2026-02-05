@@ -24,27 +24,41 @@ function formatNum(n: number): string {
 }
 
 function formatGoal(key: string): string {
-  return key.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+  return key
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
 }
 
-/**
- * Terminal Aesthetic Color System
- * Monochrome base with coral accents for key highlights only
- */
+function formatMinutes(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  if (hours > 0) {
+    return `${hours}h ${mins.toString().padStart(2, "0")}m`;
+  }
+  return `${mins}m`;
+}
+
+function formatDate(dateStr: string): string {
+  try {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch {
+    return dateStr;
+  }
+}
+
 const COLORS = {
   bg: "#050505",
   surface: "#0A0A0A",
   line: "rgba(255, 255, 255, 0.08)",
   border: "rgba(255, 255, 255, 0.10)",
-  // Coral - use sparingly
   primary: "#E85A4F",
   primaryGlow: "rgba(232, 90, 79, 0.15)",
-  // Text hierarchy
   text: "#FAFAFA",
   textSecondary: "#999999",
   textTertiary: "#666666",
   textMuted: "#444444",
-  // Grays for bars
   gray5: "#222222",
   gray7: "#333333",
   gray9: "#555555",
@@ -70,7 +84,6 @@ export async function GET(
   const { payload } = stored;
   const def = ARCHETYPE_DEFINITIONS[payload.archetype];
 
-  // Process Tools
   const toolEntries = Object.entries(payload.tools);
   const totalToolUsage = toolEntries.reduce((acc, [, count]) => acc + count, 0);
   const topTools = toolEntries
@@ -83,12 +96,11 @@ export async function GET(
       isTop: i === 0,
     }));
 
-  // Process Goals
   const goalEntries = Object.entries(payload.goals || {});
   const totalGoals = goalEntries.reduce((acc, [, count]) => acc + count, 0);
   const topGoals = goalEntries
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 4)
+    .slice(0, 3)
     .map(([name, count], i) => ({
       name: formatGoal(name),
       count,
@@ -100,11 +112,12 @@ export async function GET(
     topGoals.push({ name: "Coding", count: 100, percent: 100, isTop: true });
   }
 
-  // Activity Processing
   const hourDist = payload.timePatterns.hourDistribution;
   const dayDist = payload.timePatterns.dayOfWeekDistribution;
 
-  const peakHourEntry = Object.entries(hourDist).sort(([, a], [, b]) => b - a)[0];
+  const peakHourEntry = Object.entries(hourDist).sort(
+    ([, a], [, b]) => b - a
+  )[0];
   const peakHour = parseInt(peakHourEntry?.[0] ?? "0");
   const peakDayEntry = Object.entries(dayDist).sort(([, a], [, b]) => b - a)[0];
   const peakDayIdx = parseInt(peakDayEntry?.[0] ?? "0");
@@ -123,7 +136,6 @@ export async function GET(
     isPeak: i === peakDayIdx,
   }));
 
-  // Corner marker component
   const Corner = ({ position }: { position: string }) => (
     <div
       style={{
@@ -144,13 +156,12 @@ export async function GET(
     </div>
   );
 
-  // Bracket label component
   const BracketLabel = ({ children }: { children: string }) => (
     <div
       style={{
         display: "flex",
         fontFamily: "JetBrains Mono",
-        fontSize: 12,
+        fontSize: 11,
         letterSpacing: "0.15em",
         color: COLORS.textTertiary,
       }}
@@ -171,7 +182,7 @@ export async function GET(
           flexDirection: "column",
           backgroundColor: COLORS.bg,
           fontFamily: "Inter",
-          padding: "48px",
+          padding: "24px 32px",
           color: COLORS.text,
           position: "relative",
         }}
@@ -191,7 +202,7 @@ export async function GET(
           }}
         />
 
-        {/* Subtle glow - radial gradient for Satori compatibility */}
+        {/* Subtle glow */}
         <div
           style={{
             display: "flex",
@@ -204,20 +215,19 @@ export async function GET(
           }}
         />
 
-        {/* Header */}
+        {/* Header - 60px */}
         <div
           style={{
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            marginBottom: 32,
-            paddingBottom: 24,
+            height: 60,
+            paddingBottom: 12,
             borderBottom: `1px solid ${COLORS.line}`,
             position: "relative",
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            {/* ASCII Logo */}
             <div
               style={{
                 display: "flex",
@@ -229,21 +239,21 @@ export async function GET(
               }}
             >
               <span style={{ color: COLORS.primary }}>╔═╗</span>
-              <span>║<span style={{ color: COLORS.primary }}>W</span>║</span>
+              <span>
+                ║<span style={{ color: COLORS.primary }}>W</span>║
+              </span>
               <span style={{ color: COLORS.primary }}>╚═╝</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <div
-                style={{
-                  display: "flex",
-                  fontFamily: "JetBrains Mono",
-                  fontSize: 14,
-                  letterSpacing: "0.1em",
-                  color: COLORS.textSecondary,
-                }}
-              >
-                CLAUDE CODE WRAPPED
-              </div>
+            <div
+              style={{
+                display: "flex",
+                fontFamily: "JetBrains Mono",
+                fontSize: 14,
+                letterSpacing: "0.1em",
+                color: COLORS.textSecondary,
+              }}
+            >
+              CLAUDE CODE WRAPPED
             </div>
           </div>
           <div
@@ -258,10 +268,80 @@ export async function GET(
           </div>
         </div>
 
-        {/* Main Content */}
-        <div style={{ display: "flex", flex: 1, gap: 32 }}>
-          {/* Left Column: Identity */}
-          <div style={{ display: "flex", flexDirection: "column", width: 440, gap: 24 }}>
+        {/* Stats Row - 6 equal cells */}
+        <div
+          style={{
+            display: "flex",
+            height: 180,
+            marginTop: 16,
+            border: `1px solid ${COLORS.line}`,
+            position: "relative",
+          }}
+        >
+          <Corner position="tl" />
+          <Corner position="tr" />
+          <Corner position="bl" />
+          <Corner position="br" />
+          {[
+            { label: "HOURS", value: Math.round(payload.stats.hours).toLocaleString(), isHero: true },
+            { label: "SESSIONS", value: formatNum(payload.stats.sessions), isHero: false },
+            { label: "MESSAGES", value: formatNum(payload.stats.messages), isHero: false },
+            { label: "COMMITS", value: formatNum(payload.stats.commits), isHero: false },
+            { label: "DAYS", value: formatNum(payload.stats.days), isHero: false },
+            { label: "STREAK", value: String(payload.streaks.longest), isHero: false },
+          ].map((stat, i) => (
+            <div
+              key={stat.label}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                padding: "24px 20px",
+                justifyContent: "center",
+                alignItems: "center",
+                borderRight: i < 5 ? `1px solid ${COLORS.line}` : "none",
+                background: stat.isHero ? `radial-gradient(ellipse at center, ${COLORS.primaryGlow}, transparent)` : "transparent",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  fontFamily: "JetBrains Mono",
+                  fontSize: 14,
+                  letterSpacing: "0.15em",
+                  color: COLORS.textMuted,
+                }}
+              >
+                {stat.label}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  fontFamily: "JetBrains Mono",
+                  fontSize: stat.isHero ? 72 : 48,
+                  fontWeight: 700,
+                  color: stat.isHero ? COLORS.primary : COLORS.text,
+                  marginTop: 8,
+                  lineHeight: 1,
+                }}
+              >
+                {stat.value}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Middle Section - Two columns */}
+        <div style={{ display: "flex", flex: 1, gap: 16, marginTop: 16 }}>
+          {/* Left Column - Archetype + Focus stacked */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              gap: 16,
+            }}
+          >
             {/* Archetype Card */}
             <div
               style={{
@@ -269,24 +349,32 @@ export async function GET(
                 flexDirection: "column",
                 flex: 1,
                 border: `1px solid ${COLORS.line}`,
-                padding: 32,
+                padding: 24,
                 position: "relative",
               }}
             >
               <Corner position="tl" />
-              <Corner position="tr" />
-              <Corner position="bl" />
               <Corner position="br" />
 
               <BracketLabel>ARCHETYPE</BracketLabel>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 20, marginTop: 24 }}>
-                <div style={{ display: "flex", fontSize: 56 }}>{def.emoji}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 20,
+                  marginTop: 20,
+                  flex: 1,
+                }}
+              >
+                <div style={{ display: "flex", fontSize: 64 }}>{def.emoji}</div>
+                <div
+                  style={{ display: "flex", flexDirection: "column", gap: 8 }}
+                >
                   <div
                     style={{
                       display: "flex",
-                      fontSize: 28,
+                      fontSize: 32,
                       fontWeight: 700,
                       color: COLORS.primary,
                     }}
@@ -296,7 +384,7 @@ export async function GET(
                   <div
                     style={{
                       display: "flex",
-                      fontSize: 14,
+                      fontSize: 16,
                       color: COLORS.textSecondary,
                     }}
                   >
@@ -304,343 +392,394 @@ export async function GET(
                   </div>
                 </div>
               </div>
-
-              {/* Focus Areas */}
-              <div style={{ display: "flex", flexDirection: "column", marginTop: 32, gap: 12 }}>
-                <BracketLabel>FOCUS</BracketLabel>
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-                  {topGoals.map((goal) => (
-                    <div key={goal.name} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          width: 90,
-                          fontFamily: "JetBrains Mono",
-                          fontSize: 12,
-                          color: COLORS.textTertiary,
-                        }}
-                      >
-                        {goal.name}
-                      </div>
-                      <div style={{ display: "flex", flex: 1, height: 20, background: COLORS.gray5 }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            width: `${Math.max(goal.percent, 2)}%`,
-                            height: "100%",
-                            background: goal.isTop ? COLORS.primary : COLORS.gray7,
-                          }}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          width: 40,
-                          fontFamily: "JetBrains Mono",
-                          fontSize: 12,
-                          color: goal.isTop ? COLORS.primary : COLORS.textTertiary,
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        {Math.round(goal.percent)}%
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
-            {/* Streak Card */}
+            {/* Focus Card */}
             <div
               style={{
                 display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
+                flexDirection: "column",
+                flex: 1,
                 border: `1px solid ${COLORS.line}`,
-                padding: "20px 24px",
+                padding: 24,
                 position: "relative",
               }}
             >
               <Corner position="tl" />
               <Corner position="br" />
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <span style={{ fontSize: 24 }}>🔥</span>
-                <BracketLabel>STREAK</BracketLabel>
-              </div>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8 }}>
-                <div
-                  style={{
-                    display: "flex",
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 36,
-                    fontWeight: 700,
-                    color: COLORS.primary,
-                  }}
-                >
-                  {payload.streaks.longest}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    fontFamily: "JetBrains Mono",
-                    fontSize: 14,
-                    color: COLORS.textMuted,
-                  }}
-                >
-                  days
-                </div>
+
+              <BracketLabel>FOCUS</BracketLabel>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 16,
+                  marginTop: 20,
+                  flex: 1,
+                  justifyContent: "center",
+                }}
+              >
+                {topGoals.map((goal) => (
+                  <div
+                    key={goal.name}
+                    style={{ display: "flex", alignItems: "center", gap: 16 }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        width: 100,
+                        fontFamily: "JetBrains Mono",
+                        fontSize: 14,
+                        color: COLORS.textTertiary,
+                      }}
+                    >
+                      {goal.name}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        flex: 1,
+                        height: 24,
+                        background: COLORS.gray5,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          width: `${Math.max(goal.percent, 2)}%`,
+                          height: "100%",
+                          background: goal.isTop
+                            ? COLORS.primary
+                            : COLORS.gray7,
+                        }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        width: 50,
+                        fontFamily: "JetBrains Mono",
+                        fontSize: 14,
+                        color: goal.isTop
+                          ? COLORS.primary
+                          : COLORS.textTertiary,
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      {Math.round(goal.percent)}%
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Right Column: Stats & Data */}
-          <div style={{ display: "flex", flexDirection: "column", flex: 1, gap: 24 }}>
-            {/* Stats Grid */}
-            <div style={{ display: "flex", gap: 0, border: `1px solid ${COLORS.line}`, position: "relative" }}>
-              <Corner position="tl" />
-              <Corner position="tr" />
-              <Corner position="bl" />
-              <Corner position="br" />
-              {[
-                { label: "SESSIONS", value: formatNum(payload.stats.sessions), highlight: true },
-                { label: "MESSAGES", value: formatNum(payload.stats.messages), highlight: false },
-                { label: "HOURS", value: Math.round(payload.stats.hours).toLocaleString(), highlight: false },
-                { label: "COMMITS", value: formatNum(payload.stats.commits), highlight: false },
-              ].map((stat, i) => (
+          {/* Right Column - Tools (single card, fills) */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              border: `1px solid ${COLORS.line}`,
+              padding: 24,
+              position: "relative",
+            }}
+          >
+            <Corner position="tl" />
+            <Corner position="tr" />
+            <Corner position="bl" />
+            <Corner position="br" />
+
+            <BracketLabel>TOOLS</BracketLabel>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 20,
+                marginTop: 24,
+                flex: 1,
+                justifyContent: "center",
+              }}
+            >
+              {topTools.map((tool) => (
                 <div
-                  key={stat.label}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    flex: 1,
-                    padding: 24,
-                    gap: 8,
-                    borderLeft: i > 0 ? `1px solid ${COLORS.line}` : "none",
-                  }}
+                  key={tool.name}
+                  style={{ display: "flex", alignItems: "center", gap: 16 }}
                 >
                   <div
                     style={{
                       display: "flex",
+                      width: 120,
                       fontFamily: "JetBrains Mono",
-                      fontSize: 10,
-                      letterSpacing: "0.1em",
-                      color: COLORS.textMuted,
+                      fontSize: 16,
+                      color: tool.isTop ? COLORS.primary : COLORS.textTertiary,
                     }}
                   >
-                    {stat.label}
+                    {tool.name}
                   </div>
                   <div
                     style={{
                       display: "flex",
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 36,
-                      fontWeight: 700,
-                      color: stat.highlight ? COLORS.primary : COLORS.text,
+                      flex: 1,
+                      height: 28,
+                      background: COLORS.gray5,
                     }}
                   >
-                    {stat.value}
+                    <div
+                      style={{
+                        display: "flex",
+                        width: `${Math.max(tool.percent, 2)}%`,
+                        height: "100%",
+                        background: tool.isTop ? COLORS.primary : COLORS.gray7,
+                      }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      width: 80,
+                      fontFamily: "JetBrains Mono",
+                      fontSize: 16,
+                      color: tool.isTop ? COLORS.primary : COLORS.textMuted,
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    {formatNum(tool.count)}
                   </div>
                 </div>
               ))}
             </div>
+          </div>
+        </div>
 
-            {/* Activity & Tools Row */}
-            <div style={{ display: "flex", flex: 1, gap: 24 }}>
-              {/* Activity Patterns */}
+        {/* Bottom Section - Activity + Highlights */}
+        <div style={{ display: "flex", gap: 16, marginTop: 16 }}>
+          {/* Activity Card */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              border: `1px solid ${COLORS.line}`,
+              padding: 24,
+              position: "relative",
+            }}
+          >
+            <Corner position="tl" />
+            <Corner position="br" />
+
+            <BracketLabel>WHEN YOU CODE</BracketLabel>
+
+            {/* Hour distribution */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+                marginTop: 16,
+              }}
+            >
               <div
                 style={{
                   display: "flex",
-                  flexDirection: "column",
-                  flex: 1,
-                  border: `1px solid ${COLORS.line}`,
-                  padding: 24,
-                  position: "relative",
+                  justifyContent: "space-between",
+                  fontFamily: "JetBrains Mono",
+                  fontSize: 12,
+                  color: COLORS.textMuted,
                 }}
               >
-                <Corner position="tl" />
-                <Corner position="br" />
-
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-                  <BracketLabel>WHEN YOU CODE</BracketLabel>
+                <span>BY HOUR</span>
+                <span>
+                  peak:{" "}
+                  <span style={{ color: COLORS.primary }}>{peakTimeStr}</span>
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 2,
+                  height: 40,
+                  border: `1px solid ${COLORS.line}`,
+                  padding: 4,
+                }}
+              >
+                {hourlyData.map((h, i) => (
                   <div
+                    key={i}
                     style={{
                       display: "flex",
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 12,
-                      color: COLORS.textTertiary,
+                      flex: 1,
+                      height: "100%",
+                      background: h.isPeak ? COLORS.primary : COLORS.gray7,
+                      opacity: Math.max(h.value, 0.15),
                     }}
-                  >
-                    peak:{" "}
-                    <span style={{ color: COLORS.primary, marginLeft: 4 }}>
-                      {peakTimeStr} {peakDayStr}
-                    </span>
-                  </div>
-                </div>
+                  />
+                ))}
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontFamily: "JetBrains Mono",
+                  fontSize: 10,
+                  color: COLORS.textMuted,
+                }}
+              >
+                <span>00</span>
+                <span>12</span>
+                <span>24</span>
+              </div>
+            </div>
 
-                {/* Hour distribution */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 20 }}>
+            {/* Day distribution */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+                marginTop: 20,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  fontFamily: "JetBrains Mono",
+                  fontSize: 12,
+                  color: COLORS.textMuted,
+                }}
+              >
+                <span>BY DAY</span>
+                <span>
+                  peak:{" "}
+                  <span style={{ color: COLORS.primary }}>{peakDayStr}</span>
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                {dailyData.map((d, i) => (
                   <div
+                    key={i}
                     style={{
                       display: "flex",
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 10,
-                      color: COLORS.textMuted,
+                      flexDirection: "column",
+                      flex: 1,
+                      gap: 6,
+                      alignItems: "center",
                     }}
                   >
-                    BY HOUR
-                  </div>
-                  <div style={{ display: "flex", gap: 2, height: 32, border: `1px solid ${COLORS.line}`, padding: 4 }}>
-                    {hourlyData.map((h, i) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        height: 48,
+                        background: COLORS.gray5,
+                      }}
+                    >
                       <div
-                        key={i}
                         style={{
                           display: "flex",
-                          flex: 1,
-                          height: "100%",
-                          background: h.isPeak ? COLORS.primary : COLORS.gray7,
-                          opacity: Math.max(h.value, 0.15),
+                          width: "100%",
+                          height: `${Math.max(d.value * 100, 10)}%`,
+                          background: d.isPeak ? COLORS.primary : COLORS.gray7,
+                          alignSelf: "flex-end",
                         }}
                       />
-                    ))}
+                    </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        fontFamily: "JetBrains Mono",
+                        fontSize: 12,
+                        color: d.isPeak ? COLORS.primary : COLORS.textMuted,
+                      }}
+                    >
+                      {daysShort[i].charAt(0)}
+                    </div>
                   </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 10,
-                      color: COLORS.textMuted,
-                    }}
-                  >
-                    <span>00</span>
-                    <span>06</span>
-                    <span>12</span>
-                    <span>18</span>
-                    <span>24</span>
-                  </div>
-                </div>
-
-                {/* Day distribution */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: 1 }}>
-                  <div
-                    style={{
-                      display: "flex",
-                      fontFamily: "JetBrains Mono",
-                      fontSize: 10,
-                      color: COLORS.textMuted,
-                    }}
-                  >
-                    BY DAY
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flex: 1, alignItems: "flex-end" }}>
-                    {dailyData.map((d, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          flex: 1,
-                          height: "100%",
-                          gap: 6,
-                          alignItems: "center",
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "flex",
-                            width: "100%",
-                            height: `${Math.max(d.value * 100, 10)}%`,
-                            background: d.isPeak ? COLORS.primary : COLORS.gray7,
-                          }}
-                        />
-                        <div
-                          style={{
-                            display: "flex",
-                            fontFamily: "JetBrains Mono",
-                            fontSize: 10,
-                            color: d.isPeak ? COLORS.primary : COLORS.textMuted,
-                          }}
-                        >
-                          {daysShort[i]}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
+            </div>
+          </div>
 
-              {/* Top Tools */}
+          {/* Highlights Card */}
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              border: `1px solid ${COLORS.line}`,
+              position: "relative",
+            }}
+          >
+            <Corner position="tl" />
+            <Corner position="tr" />
+            <Corner position="bl" />
+            <Corner position="br" />
+
+            {[
+              {
+                label: "BUSIEST DAY",
+                value: `${formatDate(payload.highlights.busiestDay)}`,
+                sub: `${formatNum(payload.highlights.busiestDayMessages)} msgs`,
+              },
+              {
+                label: "MARATHON",
+                value: formatMinutes(payload.highlights.longestSessionMinutes),
+                sub: "longest session",
+              },
+              {
+                label: "RARE TOOL",
+                value: payload.highlights.rarestTool,
+                sub: "least used",
+              },
+            ].map((highlight, i) => (
               <div
+                key={highlight.label}
                 style={{
                   display: "flex",
-                  flexDirection: "column",
                   flex: 1,
-                  border: `1px solid ${COLORS.line}`,
+                  flexDirection: "column",
                   padding: 24,
-                  position: "relative",
+                  justifyContent: "center",
+                  borderLeft: i > 0 ? `1px solid ${COLORS.line}` : "none",
                 }}
               >
-                <Corner position="tl" />
-                <Corner position="br" />
-
-                <BracketLabel>TOOLS</BracketLabel>
-
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16, flex: 1 }}>
-                  {topTools.map((tool) => (
-                    <div key={tool.name} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                      <div
-                        style={{
-                          display: "flex",
-                          width: 80,
-                          fontFamily: "JetBrains Mono",
-                          fontSize: 12,
-                          color: COLORS.textTertiary,
-                        }}
-                      >
-                        {tool.name}
-                      </div>
-                      <div style={{ display: "flex", flex: 1, height: 20, background: COLORS.gray5 }}>
-                        <div
-                          style={{
-                            display: "flex",
-                            width: `${Math.max(tool.percent, 2)}%`,
-                            height: "100%",
-                            background: tool.isTop ? COLORS.primary : COLORS.gray7,
-                          }}
-                        />
-                      </div>
-                      <div
-                        style={{
-                          display: "flex",
-                          width: 50,
-                          fontFamily: "JetBrains Mono",
-                          fontSize: 12,
-                          color: tool.isTop ? COLORS.primary : COLORS.textMuted,
-                          justifyContent: "flex-end",
-                        }}
-                      >
-                        {formatNum(tool.count)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Comment annotation */}
                 <div
                   style={{
                     display: "flex",
                     fontFamily: "JetBrains Mono",
-                    fontSize: 11,
+                    fontSize: 12,
                     color: COLORS.textMuted,
-                    fontStyle: "italic",
-                    marginTop: 12,
+                    letterSpacing: "0.1em",
                   }}
                 >
-                  // {toolEntries.length} tools mastered
+                  {highlight.label}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    fontFamily: "JetBrains Mono",
+                    fontSize: 20,
+                    fontWeight: 700,
+                    color: COLORS.text,
+                    marginTop: 8,
+                  }}
+                >
+                  {highlight.value}
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    fontFamily: "JetBrains Mono",
+                    fontSize: 12,
+                    color: COLORS.textTertiary,
+                    marginTop: 4,
+                  }}
+                >
+                  {highlight.sub}
                 </div>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
