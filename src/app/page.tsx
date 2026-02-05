@@ -96,7 +96,7 @@ export default function Home() {
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="text-text-muted text-xs">3.</span>
-                    <code className="text-primary">/wrapped</code>
+                    <code className="text-primary">/ccwrapped:wrapped</code>
                   </div>
                 </div>
               </Card>
