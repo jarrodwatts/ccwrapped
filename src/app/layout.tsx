@@ -27,22 +27,42 @@ export const metadata: Metadata = {
   },
   description:
     "Your year with Claude Code — sessions, tools, streaks, and personality. Generate and share your stats.",
+  keywords: [
+    "claude code",
+    "wrapped",
+    "anthropic",
+    "ai coding",
+    "developer stats",
+    "coding personality",
+    "year in review",
+  ],
+  authors: [{ name: "Jarrod Watts", url: "https://github.com/jarrodwatts" }],
+  creator: "Jarrod Watts",
   openGraph: {
     title: "Claude Code Wrapped",
     description:
       "Your year with Claude Code — sessions, tools, streaks, and personality.",
     siteName: "Claude Code Wrapped",
     type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Claude Code Wrapped",
     description:
       "Your year with Claude Code — sessions, tools, streaks, and personality.",
+    creator: "@jaraborwatts",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
 };
 

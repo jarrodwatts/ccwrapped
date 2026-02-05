@@ -1,0 +1,31 @@
+{
+  "name": "jarrodwatts-ccwrapped",
+  "owner": {
+    "name": "Jarrod Watts",
+    "url": "https://github.com/jarrodwatts"
+  },
+  "plugins": [
+    {
+      "name": "ccwrapped",
+      "source": "./",
+      "description": "Your year in code, visualized. Analyze your coding sessions and generate a shareable wrapped page with stats, tool usage, time patterns, and your coding archetype.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Jarrod Watts",
+        "url": "https://github.com/jarrodwatts"
+      },
+      "homepage": "https://ccwrapped.com",
+      "repository": "https://github.com/jarrodwatts/claude-code-wrapped",
+      "license": "MIT",
+      "keywords": [
+        "wrapped",
+        "visualization",
+        "stats",
+        "analytics",
+        "archetype",
+        "sharing",
+        "spotify-wrapped"
+      ]
+    }
+  ]
+}

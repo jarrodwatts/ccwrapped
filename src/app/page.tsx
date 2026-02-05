@@ -37,6 +37,9 @@ export default function Home() {
             <span className="font-mono text-sm text-text-secondary tracking-tight">
               ccwrapped
             </span>
+            <span className="hidden sm:inline font-mono text-xs text-text-muted">
+              *not affiliated with Anthropic
+            </span>
           </div>
           <Button variant="terminal" size="sm" asChild>
             <a
@@ -53,7 +56,7 @@ export default function Home() {
 
       <main className="relative z-10">
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 py-20 sm:py-28">
+        <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
           <div className="flex flex-col items-center gap-8 text-center">
             {/* Terminal-style label */}
             <TerminalLabel variant="bracket">CLAUDE CODE WRAPPED</TerminalLabel>
@@ -75,21 +78,28 @@ export default function Home() {
               visualized and shareable.
             </p>
 
-            {/* CTA - install command */}
-            <div className="mt-6 flex flex-col items-center gap-4">
-              <Card variant="terminal" className="px-6 py-4" showCorners>
-                <div className="flex items-center gap-4">
-                  <span className="font-mono text-xs text-text-muted">$</span>
-                  <code className="font-mono text-sm text-text-primary">
-                    /install jarrodwatts/claude-code-wrapped
-                  </code>
+            {/* CTA - install commands */}
+            <div className="mt-6 flex flex-col items-center gap-3">
+              <Card variant="terminal" className="px-5 py-3" showCorners>
+                <div className="flex flex-col gap-2 font-mono text-sm">
+                  <div className="flex items-center gap-3">
+                    <span className="text-text-muted text-xs">1.</span>
+                    <code className="text-text-primary">
+                      /plugin marketplace add jarrodwatts/ccwrapped
+                    </code>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-text-muted text-xs">2.</span>
+                    <code className="text-text-primary">
+                      /plugin install ccwrapped
+                    </code>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-text-muted text-xs">3.</span>
+                    <code className="text-primary">/wrapped</code>
+                  </div>
                 </div>
               </Card>
-              <p className="font-mono text-xs text-text-tertiary">
-                then run{" "}
-                <code className="text-primary">/wrapped</code>
-                {" "}in any session
-              </p>
             </div>
           </div>
         </section>
@@ -180,7 +190,7 @@ export default function Home() {
           <Divider />
           <div className="mx-auto max-w-6xl px-6 pt-8 flex items-center justify-between">
             <span className="font-mono text-xs text-text-muted">
-              {"//"} not affiliated with Anthropic
+              *not affiliated with Anthropic
             </span>
             <span className="font-mono text-xs text-text-muted">
               ccwrapped.com
