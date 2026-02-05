@@ -19,6 +19,7 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
   const [downloading, setDownloading] = useState(false);
   const [imageCopied, setImageCopied] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [copying, setCopying] = useState(false);
   const def = getArchetypeDefinition(payload.archetype);
 
   const shareUrl = `https://ccwrapped.com/w/${slug}`;
@@ -50,16 +51,27 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
   }
 
   async function handleCopyImage(): Promise<void> {
+    setCopying(true);
     try {
       const response = await fetch(ogImageUrl);
       const blob = await response.blob();
+      const pngBlob = new Blob([blob], { type: "image/png" });
       await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": blob }),
+        new ClipboardItem({ "image/png": pngBlob }),
       ]);
       setImageCopied(true);
       setTimeout(() => setImageCopied(false), 2000);
-    } catch {
-      // Silently fail if clipboard API not supported
+    } catch (error) {
+      console.error("Failed to copy image:", error);
+      try {
+        await navigator.clipboard.writeText(ogImageUrl);
+        setImageCopied(true);
+        setTimeout(() => setImageCopied(false), 2000);
+      } catch {
+        // Final fallback failed
+      }
+    } finally {
+      setCopying(false);
     }
   }
 
@@ -71,9 +83,6 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
   function handleFullscreen(): void {
     window.open(ogImageUrl, "_blank", "noopener");
   }
-
-  const supportsClipboardItem =
-    typeof window !== "undefined" && "ClipboardItem" in window;
 
   return (
     <div className="relative flex h-full flex-col items-center justify-center overflow-hidden px-4 py-6">
@@ -130,36 +139,37 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
           {downloading ? "..." : "Save"}
         </Button>
 
-        {supportsClipboardItem && (
-          <Button
-            variant="terminal"
-            className="flex-1 py-3"
-            onClick={handleCopyImage}
-          >
-            <motion.span
-              key={imageCopied ? "copied" : "copy"}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center"
-            >
-              {imageCopied ? (
-                <>
-                  <svg className="h-4 w-4 mr-1.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Copied!
-                </>
-              ) : (
-                <>
-                  <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Copy
-                </>
-              )}
-            </motion.span>
-          </Button>
-        )}
+        <Button
+          variant="terminal"
+          className="flex-1 py-3"
+          onClick={handleCopyImage}
+          disabled={copying}
+        >
+          <span className="flex items-center">
+            {imageCopied ? (
+              <>
+                <svg className="h-4 w-4 mr-1.5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                Copied!
+              </>
+            ) : copying ? (
+              <>
+                <svg className="h-4 w-4 mr-1.5 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Copying...
+              </>
+            ) : (
+              <>
+                <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                Copy
+              </>
+            )}
+          </span>
+        </Button>
 
         <Button
           variant="default"
