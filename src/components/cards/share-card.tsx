@@ -24,7 +24,7 @@ export function ShareCard({ payload, slug }: ShareCardProps) {
 
   const shareUrl = `https://ccwrapped.com/w/${slug}`;
   const ogImageUrl = `/api/og/${slug}`;
-  const tweetText = `I'm ${def.name} ${def.emoji} — ${formatNumber(payload.stats.sessions)} sessions, ${formatNumber(payload.stats.messages)} messages, ${payload.streaks.longest}-day streak.\n\nGet your Claude Code Wrapped:`;
+  const tweetText = `I'm ${def.name} ${def.emoji} - ${formatNumber(payload.stats.sessions)} sessions, ${formatNumber(payload.stats.messages)} messages, ${payload.streaks.longest}-day streak.\n\nGet your Claude Code Wrapped:`;
 
   function handleCopyLink(): void {
     navigator.clipboard.writeText(shareUrl);
